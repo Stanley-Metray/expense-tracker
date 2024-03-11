@@ -9,7 +9,7 @@ module.exports.login = (req,res)=>{
     res.sendFile(path.join(__dirname, "../views", "login.html"));
 }
 
-// User registration, completed
+
 module.exports.postAddUser = async (req, res) => {
     try {
         console.log(req.body);
@@ -20,6 +20,8 @@ module.exports.postAddUser = async (req, res) => {
         res.status(500).send(error.errors[0].message);
     }
 }
+
+// User login API completed
 
 module.exports.postGetUser = async (req, res) => {
     try {
