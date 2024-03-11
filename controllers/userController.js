@@ -9,6 +9,7 @@ module.exports.login = (req,res)=>{
     res.sendFile(path.join(__dirname, "../views", "login.html"));
 }
 
+// User registration, completed
 module.exports.postAddUser = async (req, res) => {
     try {
         console.log(req.body);
