@@ -58,7 +58,7 @@ module.exports.updateExpense = async (req, res) => {
 module.exports.deleteExpense = async (req, res) => {
     try {
         const id = req.query.id;
-
+        console.log(id);
         const expense = await Expense.findOne({ where: { id } });
         if (!expense) {
             return res.status(404).send('Expense not found');
