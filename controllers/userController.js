@@ -1,6 +1,7 @@
 const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const auth = require('../controllers/authorization');
 
 module.exports.register = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "register.html"));
@@ -17,12 +18,27 @@ module.exports.postAddUser = async (req, res) => {
         password = await bcrypt.hash(password, 10);
 
         const createdUser = await User.create({ name, email, password });
-        if (createdUser)
-            res.status(200).send(createdUser);
+
+        const token = await auth.generateToken({ id: createdUser.id, email: createdUser.email });
+
+        let tokens = [];
+        if (createdUser.tokens && createdUser.tokens.length > 0) {
+            tokens = JSON.parse(createdUser.tokens);
+        }
+        tokens.push(token);
+        createdUser.tokens = JSON.stringify(tokens);
+
+        await createdUser.save();
+
+        res.status(201).send({ name: name, token: token });
     } catch (error) {
-        res.status(500).send(error.message);
+        if (error.errors[0].validatorKey === 'not_unique')
+            res.status(500).send("Email Already Exists");
+        else
+            res.status(500).send("Internal Server Error");
     }
-}
+};
+
 
 // User login API completed
 
@@ -33,19 +49,35 @@ module.exports.postGetUser = async (req, res) => {
                 email: req.body.email
             }
         });
-        if (!user)
+        if (!user) {
             res.status(404).send('User not found');
-        else {
-            const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
-            if (isPasswordValid)
-                res.status(200).send(user);
-            else
-                res.status(401).send('Invalid password');
+            return;
         }
+
+        const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).send('Invalid email or password');
+            return;
+        }
+
+        const token = await auth.generateToken({ id: user.id, email: user.email });
+
+        let tokens = [];
+        if (user.tokens && user.tokens.length > 0) {
+            tokens = JSON.parse(user.tokens);
+        }
+        tokens.push(token);
+        user.tokens = JSON.stringify(tokens);
+
+        await user.save();
+
+        res.status(200).send({ name: user.name, token: token });
     } catch (error) {
-        res.status(500).send(error.errors[0].message);
+        console.error(error);
+        res.status(500).send(error.message);
     }
-}
+};
+
 
 module.exports.updateUser = async (req, res) => {
     try {

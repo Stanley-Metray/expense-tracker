@@ -7,6 +7,7 @@ module.exports.getExpensePage = (req, res) => {
 
 module.exports.postAddExpense = async (req, res) => {
     try {
+        console.log(req.body);
         const createdExpense = await Expense.create(req.body);
         if (createdExpense)
             res.status(200).send(true);
@@ -17,8 +18,9 @@ module.exports.postAddExpense = async (req, res) => {
 
 module.exports.getAllExpenses = async (req, res) => {
     try {
+        
         const expenses = await Expense.findAll({
-            where: { UserId: req.query.UserId }
+            where: { UserId: req.decoded.id }
         });
 
         if (expenses.length === 0)
@@ -37,7 +39,6 @@ module.exports.updateExpense = async (req, res) => {
         
         delete req.body.id;
         delete req.body.UserId;
-        console.log(req.body);
         const result = await Expense.update(req.body, {
             where: {
                 id: id,
@@ -58,7 +59,6 @@ module.exports.updateExpense = async (req, res) => {
 module.exports.deleteExpense = async (req, res) => {
     try {
         const id = req.query.id;
-        console.log(id);
         const expense = await Expense.findOne({ where: { id } });
         if (!expense) {
             return res.status(404).send('Expense not found');

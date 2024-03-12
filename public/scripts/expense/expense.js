@@ -1,6 +1,8 @@
 let expenses;
 let id;
 
+
+
 // handling submission and updation
 
 document.getElementById('expense-form').addEventListener('submit', (e) => {
@@ -26,7 +28,7 @@ async function submit(e) {
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
         Expense.append('expense_category', selectedValue);
-        Expense.append('UserId', localStorage.getItem('id'));
+        Expense.append('token', localStorage.getItem('token'));
         const response = await axios.post('/add-expense', Expense, {
             headers: {
                 'Content-Type': 'application/json'
@@ -133,8 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function setDataToUI() {
     try {
-        const id = localStorage.getItem('id');
-        const response = await axios.get(`http://localhost:3000/get-all-expenses?UserId=${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:3000/get-all-expenses?token=${token}`);
         expenses = await response.data;
 
         if (Array.isArray(expenses)) {

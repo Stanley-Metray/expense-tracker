@@ -15,10 +15,10 @@ document.getElementById('registration-form').addEventListener('submit', async (e
 
             const status = response.status;
             const data = await response.data;
-            if (status === 200) {
+            if (status === 201) {
                 localStorage.setItem('username', data.name);
-                localStorage.setItem('id', data.id);
-                window.location.href = '/';
+                localStorage.setItem('token', data.token);
+                window.location.href = `/?token=${data.token}`;
             }
         }
 
