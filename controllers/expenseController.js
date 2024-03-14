@@ -20,7 +20,7 @@ module.exports.getAllExpenses = async (req, res) => {
     try {
         
         const expenses = await Expense.findAll({
-            where: { UserId: req.decoded.id }
+            where: { UserId: req.body.UserId }
         });
 
         if (expenses.length === 0)

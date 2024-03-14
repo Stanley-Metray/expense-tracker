@@ -12,13 +12,17 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         
         if(status===200)
         {
-            localStorage.setItem('username', data.name);
-            localStorage.setItem('token', data.token);
-            window.location.href = `/?token=${data.token}`;
+            const now = new Date();
+            expirationDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            document.cookie = `token=${data.token}; expires; ${expirationDate.toUTCString()}`;
+            document.cookie = `username=${data.name}; expires; ${expirationDate.toUTCString()}`;
+            window.location.href = '/';
         }
 
     } catch (error) {
-        setMessage(error.response.data);
+        console.log(error);
+        const data = await error.response.data;
+        setMessage(data);
     }
 });
 

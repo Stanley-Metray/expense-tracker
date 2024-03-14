@@ -6,15 +6,19 @@ const appRouter = require('./routes/appRouter');
 const expenseRouter = require('./routes/expenseRouter');
 const userRouter = require('./routes/userRouter');
 const incomeRouter = require('./routes/incomeRouter');
+const paymentRouter = require('./routes/paymentRouter');
 const User = require('./models/user');
 const Expense = require('./models/expense');
 const Income = require('./models/income');
+const Order = require('./models/order');
 const favicon = require('serve-favicon');
-
+const cookieParser = require('cookie-parser');
 const app = express();
+console.clear();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/css', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/css")));
 app.use('/js', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/js")));
 app.use('/fonts', express.static(path.join(__dirname, "/node_modules/bootstrap-icons/font")));
@@ -24,10 +28,16 @@ app.use(appRouter);
 app.use(userRouter);
 app.use(expenseRouter);
 app.use(incomeRouter);
+app.use(paymentRouter);
+
 User.hasMany(Expense, { onDelete: 'CASCADE' });
 Expense.belongsTo(User);
+
 User.hasMany(Income, { onDelete: 'CASCADE' });
 Income.belongsTo(User);
+
+User.hasMany(Order, {onDelete : 'CASCADE'});
+Order.belongsTo(User);
 
 (async () => {
     try {

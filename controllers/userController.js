@@ -1,7 +1,7 @@
 const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const auth = require('../controllers/authorization');
+const authController = require('../controllers/authController');
 
 module.exports.register = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "register.html"));
@@ -19,7 +19,7 @@ module.exports.postAddUser = async (req, res) => {
 
         const createdUser = await User.create({ name, email, password });
 
-        const token = await auth.generateToken({ id: createdUser.id, email: createdUser.email });
+        const token = await authController.generateToken({ id: createdUser.id, email: createdUser.email });
 
         let tokens = [];
         if (createdUser.tokens && createdUser.tokens.length > 0) {
@@ -32,10 +32,7 @@ module.exports.postAddUser = async (req, res) => {
 
         res.status(201).send({ name: name, token: token });
     } catch (error) {
-        if (error.errors[0].validatorKey === 'not_unique')
-            res.status(500).send("Email Already Exists");
-        else
-            res.status(500).send("Internal Server Error");
+        console.log(error);
     }
 };
 
@@ -60,7 +57,7 @@ module.exports.postGetUser = async (req, res) => {
             return;
         }
 
-        const token = await auth.generateToken({ id: user.id, email: user.email });
+        const token = await authController.generateToken({ id: user.id, email: user.email });
 
         let tokens = [];
         if (user.tokens && user.tokens.length > 0) {

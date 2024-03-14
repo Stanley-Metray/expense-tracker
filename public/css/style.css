@@ -13,16 +13,18 @@ body
 .navbar-brand:hover
 {
     text-decoration: underline;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
 }
 
 nav ul li a {
     /* overriding bootstrap  */
-
     color: #ffff !important;
 }
 
 nav ul li a:hover {
-    text-decoration: underline;
+    text-decoration: underline solid white;
+    transition: text-decoration 0.3s ease;
 }
 
 .form-container

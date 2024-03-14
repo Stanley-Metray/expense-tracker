@@ -1,14 +1,14 @@
 const router = require('express').Router();
 const ExpenseController = require('../controllers/expenseController');
-const auth = require('../controllers/authorization');
+const authController = require('../controllers/authController');
 
-router.get('/expense', auth.getVerifyToken, ExpenseController.getExpensePage);
+router.get('/expense', authController.verifyToken, ExpenseController.getExpensePage);
 
-router.post('/add-expense', auth.postVerifyToken, ExpenseController.postAddExpense);
+router.post('/add-expense', authController.verifyToken, ExpenseController.postAddExpense);
 
-router.get('/get-all-expenses', auth.getVerifyToken, ExpenseController.getAllExpenses);
+router.get('/get-all-expenses', authController.verifyToken, ExpenseController.getAllExpenses);
 
-router.put('/update-expense', ExpenseController.updateExpense);
+router.put('/update-expense',authController.verifyToken, ExpenseController.updateExpense);
 
 router.delete('/delete-expense', ExpenseController.deleteExpense);
 

@@ -1,11 +1,9 @@
 let expenses;
 let id;
 
-
-
 // handling submission and updation
 
-document.getElementById('expense-form').addEventListener('submit', (e) => {
+function handleSubmit(e){
     e.preventDefault();
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
@@ -20,7 +18,7 @@ document.getElementById('expense-form').addEventListener('submit', (e) => {
         btnDelete.classList.replace('d-inline-block', 'd-none');
         id = undefined;
     }
-});
+}
 
 async function submit(e) {
     try {
@@ -28,7 +26,6 @@ async function submit(e) {
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
         Expense.append('expense_category', selectedValue);
-        Expense.append('token', localStorage.getItem('token'));
         const response = await axios.post('/add-expense', Expense, {
             headers: {
                 'Content-Type': 'application/json'
@@ -52,7 +49,6 @@ async function update(e) {
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
         Expense.append('expense_category', selectedValue);
-        Expense.append('UserId', localStorage.getItem('id'));
         Expense.append('id', id);
 
         const response = await axios.put('/update-expense', Expense, {
@@ -111,8 +107,9 @@ document.getElementById('btn-delete').addEventListener('click', async (e) => {
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
             setMessage(`<p>${data} &nbsp; &nbsp;<i class="bi bi-check-circle-fill"></i></p>`);
-            setDataToUI();
         }
+
+        setDataToUI();
     } catch (error) {
         setMessage(`<p>${'Internal Server Error'} <i class="bi bi-x-circle-fill"></i></p>`);
     }
@@ -135,8 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function setDataToUI() {
     try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:3000/get-all-expenses?token=${token}`);
+        const response = await axios.get(`http://localhost:3000/get-all-expenses`);
         expenses = await response.data;
 
         if (Array.isArray(expenses)) {
@@ -164,9 +160,8 @@ async function setDataToUI() {
 
             document.getElementById('all-expenses').innerHTML = html;
         }
-        else
-            document.getElementById('all-expenses').innerHTML = '';
     } catch (error) {
+        document.getElementById('all-expenses').innerHTML = '';
         setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 }

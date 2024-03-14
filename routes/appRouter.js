@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const AppController = require('../controllers/appController');
-const auth = require('../controllers/authorization');
+const authController = require('../controllers/authController');
 
-router.get('/', auth.getVerifyToken ,AppController.getHome);
+router.get('/', authController.verifyToken ,AppController.getHome);
 
 module.exports = router;

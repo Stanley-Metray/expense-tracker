@@ -16,46 +16,55 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body shadow" data-bs-theme="dark">
-        <div class="container">
-            <a class="navbar-brand" id="getHome" href="/"><span>E</span><span>T</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expense" id="getExpense">Expense</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="getIncome" href="/income" id="getIncome">Income</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login" id="username" id="getUser">login</a>
-                    </li>
-                </ul>
+
+    <body class="any-form">
+        <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body shadow" data-bs-theme="dark">
+            <div class="container">
+                <a class="navbar-brand" href="/"><span>E</span><span>T</span></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href='/expense'>Expense</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='/income'>Income</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='/login' id="username">login</a>
+                        </li>
+                    </ul>
+                    <div class="d-none">
+                        <button id="buy-premium" class="btn btn-outline-warning btn-sm">Upgrade To Premium</button>
+                        <span id="prime" title="Premium Account" class="text-warning d-none"><i
+                                class="bi bi-star-fill"></i></span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <main class="container mt-2 d-flex align-items-center form-container">
-        <form id="login-form"
-            class="d-flex flex-column gap-2 bg-light default-form px-3 py-2 border border-1 rounded-2 shadow-sm">
-            <h4 class="my-3 text-primary">Login</h4>
-            <div class="alert alert-danger" style="display: none;" role="alert" id="message"></div>
+        <main class="container mt-2 d-flex align-items-center form-container">
+            <form id="login-form"
+                class="d-flex flex-column gap-2 bg-light default-form px-3 py-2 border border-1 rounded-2 shadow-sm">
+                <h4 class="my-3 text-primary">Login</h4>
+                <div class="alert alert-danger" style="display: none;" role="alert" id="message"></div>
 
-            <input type="text" name="name" id="name" placeholder="Username" class="form-control">
-            <input type="email" name="email" id="email" placeholder="Email" class="form-control">
-            <input type="password" name="password" id="password" placeholder="Password" class="form-control">
-            <button type="submit" class="btn btn-success">Login</button>
-            <a href="/register" class="nav-link mt-3 text-info text-decoration-underline">Don't have an account?</a>
-        </form>
-    </main>
-    </main>
-    <script src="js/bootstrap.bundle.min.js" defer></script>
-    <script src="scripts/user/user-login.js" defer></script>
-    <script src="scripts/script.js" defer></script>
-</body>
+                <input type="text" name="name" id="name" placeholder="Username" class="form-control">
+                <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+                <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+                <button type="submit" class="btn btn-success">Login</button>
+                <a href="/register" class="nav-link mt-3 text-info text-decoration-underline">Don't have an account?</a>
+            </form>
+        </main>
+        </main>
+        <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="scripts/user/user-login.js" type="text/javascript"></script>
+        <script src="scripts/script.js" type="text/javascript"></script>
+    </body>
 
 </html>
