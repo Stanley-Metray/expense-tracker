@@ -134,13 +134,12 @@ async function setDataToUI() {
     try {
         const response = await axios.get(`http://localhost:3000/get-all-expenses`);
         expenses = await response.data;
-
         if (Array.isArray(expenses)) {
             let html = '';
             let total = 0;
             expenses.forEach((expense, index) => {
 
-                let date = convertedDate(expense.updatedAt);
+                let date = convertedDate(expense.updatedAt); 
                 total = total + expense.expense_amount;
                 html += `<tr id='${index}'>
                 <td>${date}</td>

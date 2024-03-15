@@ -1,5 +1,6 @@
 const path = require('path');
 const Expense = require('../models/expense');
+const sequelize = require('../connection/connect');
 
 module.exports.getExpensePage = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "expense.html"));
@@ -18,9 +19,10 @@ module.exports.postAddExpense = async (req, res) => {
 
 module.exports.getAllExpenses = async (req, res) => {
     try {
-        
+
         const expenses = await Expense.findAll({
-            where: { UserId: req.body.UserId }
+            where: { UserId: req.body.UserId },
+            attributes: ['id', 'expense_name', 'expense_category', 'expense_description', 'expense_amount', 'updatedAt']
         });
 
         if (expenses.length === 0)
@@ -28,6 +30,7 @@ module.exports.getAllExpenses = async (req, res) => {
         else
             res.status(200).send(expenses);
     } catch (error) {
+        console.log(error);
         res.status(500).send(error.message);
     }
 }
@@ -36,7 +39,7 @@ module.exports.updateExpense = async (req, res) => {
     try {
         let id = req.body.id;
         let UserId = req.body.UserId;
-        
+
         delete req.body.id;
         delete req.body.UserId;
         const result = await Expense.update(req.body, {
