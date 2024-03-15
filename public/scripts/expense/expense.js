@@ -101,6 +101,7 @@ document.getElementById('expense-table').addEventListener('click', (e) => {
 // function to delete selected expense 
 
 document.getElementById('btn-delete').addEventListener('click', async (e) => {
+    console.log(id)
     try {
         if (id) {
             const response = await axios.delete(`/delete-expense?id=${id}`);

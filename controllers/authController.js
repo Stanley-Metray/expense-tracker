@@ -15,14 +15,13 @@ module.exports.generateToken = async (user) => {
 
 module.exports.verifyToken = async (req, res, next) => {
     const token = req.cookies.token;
-    
+
     if (!token)
         return res.sendFile(path.join(__dirname, "../views", "authError.html"));
 
     jwt.verify(token, process.env.JWT_SECRETE_KEY, (err, decoded) => {
         if (err)
             return res.sendFile(path.join(__dirname, "../views", "authError.html"));
-
         req.body.UserId = decoded.id;
         next();
     });
