@@ -25,7 +25,8 @@ document.getElementById('registration-form').addEventListener('submit', async (e
         }
 
     } catch (error) {
-        setMessage(error);
+        console.log(error);
+        setMessage("Email must be Unique, something went wrong");
     }
 });
 

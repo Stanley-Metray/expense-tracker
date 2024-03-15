@@ -1,6 +1,7 @@
 const path = require('path');
 const Expense = require('../models/expense');
 const sequelize = require('../connection/connect');
+const User = require('../models/user');
 
 module.exports.getExpensePage = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "expense.html"));
@@ -8,11 +9,21 @@ module.exports.getExpensePage = (req, res) => {
 
 module.exports.postAddExpense = async (req, res) => {
     try {
-        console.log(req.body);
         const createdExpense = await Expense.create(req.body);
+
         if (createdExpense)
+        {
+            const user = await User.findOne({
+                where : {id : req.body.UserId},
+                attributes : ['id', 'total_expense']
+            });
+
+            user.total_expense = Number(user.total_expense) + Number(createdExpense.expense_amount);
+            user.save();
             res.status(200).send(true);
+        }
     } catch (error) {
+        console.log(error);
         res.status(500).send(error.message);
     }
 }

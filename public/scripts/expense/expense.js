@@ -3,7 +3,7 @@ let id;
 
 // handling submission and updation
 
-function handleSubmit(e){
+function handleSubmit(e) {
     e.preventDefault();
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
@@ -133,13 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
 async function setDataToUI() {
     try {
         const response = await axios.get(`http://localhost:3000/get-all-expenses`);
+        
         expenses = await response.data;
         if (Array.isArray(expenses)) {
             let html = '';
             let total = 0;
             expenses.forEach((expense, index) => {
-
-                let date = convertedDate(expense.updatedAt); 
+                console.log(expense);
+                let date = convertedDate(expense.updatedAt);
                 total = total + expense.expense_amount;
                 html += `<tr id='${index}'>
                 <td>${date}</td>

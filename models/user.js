@@ -24,6 +24,10 @@ const User = sequelize.define('User', {
     tokens : {
         type : DataTypes.JSON,
         defaultValue : []
+    },
+    total_expense : {
+        type : DataTypes.INTEGER,
+        defaultValue : 0
     }
 });
 

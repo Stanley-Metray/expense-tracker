@@ -33,6 +33,7 @@ module.exports.postAddUser = async (req, res) => {
         res.status(201).send({ name: name, token: token });
     } catch (error) {
         console.log(error);
+        res.status(500).send(error.message);
     }
 };
 
