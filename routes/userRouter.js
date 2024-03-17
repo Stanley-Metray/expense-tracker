@@ -15,9 +15,9 @@ router.put('/update-user', UserController.updateUser);
 
 router.delete('/delete-user', UserController.deleteUser);
 
-router.get('/password/forgotpassword', UserController.getForgotPassword);
+router.get('/password/forgot-password', UserController.getForgotPassword);
 
-router.post('/password/forgotpassword', UserController.postForgotPassword);
+router.post('/password/forgot-password', UserController.postForgotPassword);
 
 router.get('/password/reset-password/:id', UserController.getResetPassword);
 

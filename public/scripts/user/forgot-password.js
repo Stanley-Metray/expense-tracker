@@ -1,7 +1,7 @@
 document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post('/password/forgotpassword', new FormData(e.target), {
+        const response = await axios.post('/password/forgot-password', new FormData(e.target), {
             headers: {
                 'Content-Type': 'application/json'
             }

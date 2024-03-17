@@ -21,6 +21,9 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
             const data = await response.data;
             if(response.status===200)
             setMessage(data);
+            setTimeout(()=>{
+                window.location.href = '/login';
+            }, 3000);
         }
         
     } catch (error) {

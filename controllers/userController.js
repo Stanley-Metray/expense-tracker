@@ -173,7 +173,7 @@ module.exports.postForgotPassword = async (req, res) => {
         // Generate a unique password reset token
         const fp = await ForgotPasswordRequests.create({ UserId: user.id });
 
-        const sender = { email: 'stanleymetray@gmail.com' };
+        const sender = { email: 'etracker@support.com' };
         const receivers = [{ email }];
 
         await transEmailApi.sendTransacEmail({
@@ -204,7 +204,7 @@ module.exports.postResetPassword = async (req,res)=>{
         await user.save();
         await fpr.save();
 
-        res.status(200).send("Password Updated, Please wait redirecting to Home Page");
+        res.status(200).send("Password Updated, Please wait redirecting to Login Page");
     } catch (error) {
         console.log(error);
         res.status(500).send(error.message);
