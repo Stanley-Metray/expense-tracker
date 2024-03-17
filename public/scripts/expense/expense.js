@@ -101,13 +101,14 @@ document.getElementById('expense-table').addEventListener('click', (e) => {
 // function to delete selected expense 
 
 document.getElementById('btn-delete').addEventListener('click', async (e) => {
-    console.log(id)
+    e.stopPropagation();
     try {
         if (id) {
             const response = await axios.delete(`/delete-expense?id=${id}`);
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
-            setMessage(`<p>${data} &nbsp; &nbsp;<i class="bi bi-check-circle-fill"></i></p>`);
+            if (data)
+                setMessage(`<p>Expense Deleted &nbsp; &nbsp;<i class="bi bi-check-circle-fill"></i></p>`);
         }
 
         setDataToUI();
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function setDataToUI() {
     try {
         const response = await axios.get(`http://localhost:3000/get-all-expenses`);
-        
+
         expenses = await response.data;
         if (Array.isArray(expenses)) {
             let html = '';

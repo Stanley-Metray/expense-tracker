@@ -14,15 +14,17 @@ const Order = require('./models/order');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const app = express();
-console.clear();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+
 app.use('/css', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/css")));
+
+
 app.use('/js', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/js")));
 app.use('/fonts', express.static(path.join(__dirname, "/node_modules/bootstrap-icons/font")));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.png')));
 app.use(appRouter);
 app.use(userRouter);

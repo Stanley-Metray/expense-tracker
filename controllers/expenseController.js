@@ -74,7 +74,6 @@ module.exports.updateExpense = async (req, res) => {
 }
 
 module.exports.deleteExpense = async (req, res) => {
-    const transaction = await sequelize.transaction();
     try {
         const id = req.query.id;
 
@@ -83,27 +82,23 @@ module.exports.deleteExpense = async (req, res) => {
             return res.status(404).send('Expense not found');
         }
 
-        await Expense.destroy({ where: { id } });
+        const destroyed = await Expense.destroy({ where: { id } });
         
-        const user = await User.findOne({
-            where: { id: expense.UserId },
-            attributes: ['total_expense']
-        });
-
-        user.total_expense = Number(user.total_expense) - Number(expense.expense_amount);
-        user.id = expense.UserId;
-        user.save();
-        
-        res.status(200).send("Expense Deleted");
+        if(destroyed)
+        {
+            const user = await User.findOne({
+                where: { id: expense.UserId },
+                attributes: ['id','total_expense']
+            });
+    
+            user.total_expense = Number(user.total_expense) - Number(expense.expense_amount);
+            user.save();
+            
+            res.status(200).send(true);
+        }
 
     } catch (error) {
-        const expense = await Expense.findOne({ where: { id } });
-        if (!expense) {
-            return res.status(404).send('Expense Deleted');
-        }
-        else {
             console.log(error);
             res.status(500).send('Internal Server Error');
-        }
     }
 };

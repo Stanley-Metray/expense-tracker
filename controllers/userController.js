@@ -122,3 +122,8 @@ module.exports.deleteUser = async (req, res) => {
             res.status(500).send('Internal Server Error');
     }
 };
+
+
+module.exports.getForgotPassword = (req,res)=>{
+    res.sendFile(path.join(__dirname, "../views", "forgotPassword.html"));
+}
