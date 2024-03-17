@@ -17,4 +17,6 @@ router.delete('/delete-user', UserController.deleteUser);
 
 router.get('/password/forgotpassword', UserController.getForgotPassword);
 
+router.post('/password/forgotpassword', UserController.postForgotPassword);
+
 module.exports = router;

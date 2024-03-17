@@ -2,6 +2,7 @@ const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const authController = require('../controllers/authController');
+const Sib = require('sib-api-v3-sdk');
 
 module.exports.register = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "register.html"));
@@ -124,6 +125,37 @@ module.exports.deleteUser = async (req, res) => {
 };
 
 
-module.exports.getForgotPassword = (req,res)=>{
+module.exports.getForgotPassword = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "forgotPassword.html"));
 }
+
+module.exports.postForgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const client = Sib.ApiClient.instance;
+
+        const apiKey = client.authentications['api-key'];
+        apiKey.apiKey = process.env.API_KEY;
+
+        const transEmailApi = new Sib.TransactionalEmailsApi();
+
+        // Generate a unique password reset token
+        const resetToken = "hellomynameisstanley";
+
+        const sender = { email: 'stanleymetray@gmail.com' };
+        const receivers = [{ email }];
+
+        const result = await transEmailApi.sendTransacEmail({
+            sender,
+            to: receivers,
+            subject: 'Forgot Password',
+            htmlContent: `Click <a href="/password/forgotpassword/reset-password/${resetToken}">here</a> to reset your password.`
+        });
+
+        console.log(result);
+        res.status(200).json({ message: 'Email sent successfully' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to send email' });
+    }
+};
