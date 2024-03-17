@@ -2,6 +2,7 @@ const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const authController = require('../controllers/authController');
+const ForgotPasswordRequests = require('../models/forgot_password_requests');
 const Sib = require('sib-api-v3-sdk');
 
 module.exports.register = (req, res) => {
@@ -129,8 +130,38 @@ module.exports.getForgotPassword = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "forgotPassword.html"));
 }
 
+module.exports.getResetPassword = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+
+        const fpr = await ForgotPasswordRequests.findOne({ where: { id: id } });
+
+        if (fpr && fpr.isActive) {
+            res.sendFile(path.join(__dirname, "../views", "resetPassword.html"));
+        }
+        else {
+            res.send(`<h3 class='text-danger text-text-decoration-underline'>This link was expired</h3>`)
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Failed to generate link");
+    }
+}
+
 module.exports.postForgotPassword = async (req, res) => {
     try {
+        const user = await User.findOne({
+            where: {
+                email: req.body.email
+            }
+        });
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+
         const { email } = req.body;
         const client = Sib.ApiClient.instance;
 
@@ -140,22 +171,44 @@ module.exports.postForgotPassword = async (req, res) => {
         const transEmailApi = new Sib.TransactionalEmailsApi();
 
         // Generate a unique password reset token
-        const resetToken = "hellomynameisstanley";
+        const fp = await ForgotPasswordRequests.create({ UserId: user.id });
 
         const sender = { email: 'stanleymetray@gmail.com' };
         const receivers = [{ email }];
 
-        const result = await transEmailApi.sendTransacEmail({
+        await transEmailApi.sendTransacEmail({
             sender,
             to: receivers,
             subject: 'Forgot Password',
-            htmlContent: `Click <a href="/password/forgotpassword/reset-password/${resetToken}">here</a> to reset your password.`
+            htmlContent: `Click <a href='http://localhost:3000/password/reset-password/${fp.id}'>here</a> to reset your password.`
         });
 
-        console.log(result);
-        res.status(200).json({ message: 'Email sent successfully' });
+        res.status(200).send({ message: 'Email sent successfully' });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Failed to send email' });
+        res.status(500).send({ error: 'Failed to send email' });
     }
 };
+
+module.exports.postResetPassword = async (req,res)=>{
+    try {
+        let {id, password } = req.body;
+        password = await bcrypt.hash(password, 10);
+        
+        const fpr = await ForgotPasswordRequests.findOne({where : {id}});
+        const user = await User.findOne({where : {id : fpr.UserId}});
+        
+        user.password = password;
+        fpr.isActive = false;
+
+        await user.save();
+        await fpr.save();
+
+        res.status(200).send("Password Updated, Please wait redirecting to Home Page");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+}
+
+

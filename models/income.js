@@ -1,5 +1,5 @@
 const sequelize = require('../connection/connect');
-const {DataTypes, DOUBLE} = require('sequelize');
+const {DataTypes} = require('sequelize');
 
 const Income = sequelize.define('Income', {
     id : {
@@ -13,7 +13,7 @@ const Income = sequelize.define('Income', {
         allowNull : false
     },
     income_amount : {
-        type : DOUBLE,
+        type : DataTypes.DOUBLE,
         allowNull : false
     },
     income_description : {
