@@ -1,4 +1,4 @@
-let expenses;
+let incomes;
 let id;
 
 // handling submission and updation
@@ -22,11 +22,8 @@ function handleSubmit(e) {
 
 async function submit(e) {
     try {
-        const Expense = new FormData(e.target);
-        const selectElement = document.getElementById('category');
-        const selectedValue = selectElement.value;
-        Expense.append('expense_category', selectedValue);
-        const response = await axios.post('/add-expense', Expense, {
+        const Income = new FormData(e.target);
+        const response = await axios.post('/add-income', Income, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -39,19 +36,17 @@ async function submit(e) {
             e.target.reset();
         }
     } catch (error) {
+        console.log(error);
         setMessage(`<p>${'Internal Server Error'} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
 
 async function update(e) {
     try {
-        const Expense = new FormData(e.target);
-        const selectElement = document.getElementById('category');
-        const selectedValue = selectElement.value;
-        Expense.append('expense_category', selectedValue);
-        Expense.append('id', id);
+        const Income = new FormData(e.target);
+        Income.append('id', id);
 
-        const response = await axios.put('/update-expense', Expense, {
+        const response = await axios.put('/update-income', Income, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -72,21 +67,14 @@ async function update(e) {
 
 // handling which item to delete or update 
 
-document.getElementById('expense-table').addEventListener('click', (e) => {
-    const expense = expenses[e.target.closest('tr').id];
-    document.getElementById('expense_name').value = expense.expense_name;
-    document.getElementById('expense_amount').value = expense.expense_amount;
-    document.getElementById('expense_description').value = expense.expense_description;
-    const selectElement = document.getElementById('category');
-    Array.from(selectElement.options).forEach((option) => {
-        if (option.value === expense.expense_category) {
-            option.selected = true;
-        } else {
-            option.selected = false;
-        }
-    });
+document.getElementById('income-table').addEventListener('click', (e) => {
+    const Income = incomes[e.target.closest('tr').id];
+    document.getElementById('income_name').value = Income.income_name;
+    document.getElementById('income_amount').value = Income.income_amount;
+    document.getElementById('income_description').value = Income.income_description;
+   
 
-    id = expense.id;
+    id = Income.id;
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
     button.innerText = 'Update';
@@ -98,17 +86,17 @@ document.getElementById('expense-table').addEventListener('click', (e) => {
     });
 });
 
-// function to delete selected expense 
+// function to delete selected income 
 
 document.getElementById('btn-delete').addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
         if (id) {
-            const response = await axios.delete(`/delete-expense?id=${id}`);
+            const response = await axios.delete(`/delete-income?id=${id}`);
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
             if (data)
-                setMessage(`<p>Expense Deleted &nbsp; &nbsp;<i class="bi bi-check-circle-fill"></i></p>`);
+                setMessage(`<p>Income Deleted &nbsp; &nbsp;<i class="bi bi-check-circle-fill"></i></p>`);
         }
 
         setDataToUI();
@@ -128,44 +116,42 @@ function setMessage(HTML) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    setDataToUI();
-});
-
 async function setDataToUI() {
     try {
-        const response = await axios.get(`http://localhost:3000/get-all-expenses`);
-        expenses = await response.data;
-        if (Array.isArray(expenses)) {
+        const response = await axios.get(`/get-all-incomes`);
+        incomes = await response.data;
+        if (Array.isArray(incomes)) {
             let html = '';
             let total = 0;
-            expenses.forEach((expense, index) => {
-                let date = convertedDate(expense.updatedAt);
-                total = total + expense.expense_amount;
+            incomes.forEach((income, index) => {
+                let date = convertedDate(income.updatedAt);
+                total = total + income.income_amount;
                 html += `<tr id='${index}'>
                 <td>${date}</td>
-                <td>${expense.expense_name}</td>
-                <td>${expense.expense_category}</td>
-                <td>${expense.expense_description}</td>
-                <td>${expense.expense_amount}</td>
+                <td>${income.income_name}</td>
+                <td>${income.income_description}</td>
+                <td>${income.income_amount}</td>
             </tr>`;
             });
             html += `<tr>
-        <td></td>
         <td></td>
         <td></td>
         <td class='text-end text-success fw-bolder'>Total:</td>
         <td class='text-success fw-bolder'>${total}</td>
     </tr>`;
 
-            document.getElementById('all-expenses').innerHTML = html;
+            document.getElementById('all-incomes').innerHTML = html;
         }
     } catch (error) {
-        document.getElementById('all-expenses').innerHTML = '';
+        console.log(error);
+        document.getElementById('all-incomes').innerHTML = '';
         setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    setDataToUI();
+});
 
 function convertedDate(dateStr) {
     const date = new Date(dateStr);
