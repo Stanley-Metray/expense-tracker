@@ -2,10 +2,12 @@ const path = require('path');
 const User = require('../models/user');
 const Expense = require('../models/expense');
 const Income = require('../models/income');
-const { Sequelize, Op } = require('sequelize');
+const ReportLinks = require('../models/report_download_links');
+const { Op } = require('sequelize');
+const s3CloudService = require('../services/s3CloudService');
 
-module.exports.getHome = (req,res)=>{
-    res.sendFile(path.join(__dirname, "../views", "index.html"));
+module.exports.getHome = (req, res) => {
+  res.sendFile(path.join(__dirname, "../views", "index.html"));
 }
 
 
@@ -145,8 +147,35 @@ module.exports.getMonthlyReport = async (req, res) => {
   }
 };
 
-  
-  
-  
-  
-  
+
+module.exports.getDownloadReport = async (req, res) => {
+  try {
+    const UserId = req.body.UserId;
+    let expenses = await Expense.findAll({ where: { UserId: UserId } });
+    expenses = JSON.stringify(expenses);
+
+    const fileURL = await s3CloudService.uploadToS3(expenses, `expenses-${UserId}-${new Date().toTimeString()}.txt`, res);
+    await ReportLinks.create({link : fileURL, UserId : UserId});
+    res.status(200).json({ fileURL: fileURL, success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+
+module.exports.getDownloadLinks = async (req, res)=>{
+  try {
+    const downloadLinks = await ReportLinks.findAll({where : {UserId : req.body.UserId}});
+    if(downloadLinks)
+      res.status(200).json(downloadLinks);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+
+
+
+

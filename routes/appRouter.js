@@ -10,4 +10,8 @@ router.get('/get-weekly-report', authController.verifyToken, AppController.getWe
 
 router.get('/get-monthly-report', authController.verifyToken, AppController.getMonthlyReport);
 
+router.get('/download-report', authController.verifyToken, AppController.getDownloadReport);
+
+router.get('/get-download-links', authController.verifyToken, AppController.getDownloadLinks);
+
 module.exports = router;
