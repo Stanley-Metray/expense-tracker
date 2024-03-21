@@ -51,27 +51,36 @@ module.exports.getAllExpenses = async (req, res) => {
 
 module.exports.updateExpense = async (req, res) => {
     try {
-        let id = req.body.id;
-        let UserId = req.body.UserId;
 
-        delete req.body.id;
-        delete req.body.UserId;
-        const result = await Expense.update(req.body, {
-            where: {
-                id: id,
-                UserId: UserId
-            },
+        const { id, UserId, dif, increase, ...updateData } = req.body;
+
+        const updateResult = await Expense.update(updateData, {
+            where: { id: id },
             returning: true
         });
 
-        if (result[1] === 0)
-            res.status(404).send('Missing Expense, Something Went Wrong');
+        if (updateResult === 0) {
+            return res.status(404).send('Missing Expense, Something Went Wrong');
+        }
+
+        const user = await User.findOne({
+            where: { id: UserId },
+            attributes: ['id', 'total_expense']
+        });
+
+        if (increase === 'true')
+            user.total_expense = Number(user.total_expense) + Number(dif);
         else
-            res.status(200).send(await Expense.findOne({ where: { id: id, UserId: UserId } }));
+            user.total_expense = Number(user.total_expense) - Number(dif);
+
+        await user.save();
+        res.status(200).send({ success: true });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        res.status(500).send('Server Error');
     }
-}
+};
+
 
 module.exports.deleteExpense = async (req, res) => {
     try {
@@ -83,24 +92,75 @@ module.exports.deleteExpense = async (req, res) => {
         }
 
         const destroyed = await Expense.destroy({ where: { id } });
-        
-        if(destroyed)
-        {
+
+        if (destroyed) {
             const user = await User.findOne({
                 where: { id: expense.UserId },
-                attributes: ['id','total_expense']
+                attributes: ['id', 'total_expense']
             });
-    
+
             user.total_expense = Number(user.total_expense) - Number(expense.expense_amount);
             user.save();
-            
+
             res.status(200).send(true);
         }
 
     } catch (error) {
-            console.log(error);
-            res.status(500).send('Internal Server Error');
+        console.log(error);
+        res.status(500).send('Internal Server Error');
     }
 };
 
 
+module.exports.getExpensesPagination = async (req, res) => {
+    try {
+        console.log("=========================================================================\n\n\n\n\n");
+        console.clear();
+        console.log(req.body);
+        console.log(req.query);
+        const page = parseInt(req.query.page);
+        const UserId = req.body.UserId;
+        const offset = (page - 1) * 10
+        const expenses = await Expense.findAll({
+            where: {
+                UserId: UserId
+            },
+            offset: offset,
+            limit: 10
+        });
+
+        const count = await Expense.count({
+            where: {
+                UserId: UserId
+            }
+        });
+        console.log("COUNT : ", count);
+        let pagination;
+
+        if (expenses.length === 0) {
+            pagination = {isPagination : false}
+        }
+        else {
+            if (count < 10) {
+                pagination = {
+                    isPagination: false,
+                    currentPage: 1,
+                    next: 1,
+                    prev: 1
+                }
+            }
+            else {
+                pagination = {
+                    isPagination: true,
+                    currentPage: page,
+                    next: page + 1,
+                    prev: page > 1 ? page - 1 : 1
+                };
+            }
+        }
+
+        res.status(200).json({ expenses, pagination });
+    } catch (error) {
+        console.log(error);
+    }
+}

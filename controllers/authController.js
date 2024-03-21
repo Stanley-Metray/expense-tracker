@@ -14,7 +14,6 @@ module.exports.generateToken = async (user) => {
 
 module.exports.verifyToken = async (req, res, next) => {
     const token = req.cookies.token;
-   
     if (!token)
         return res.sendFile(path.join(__dirname, "../views", "authError.html"));
 

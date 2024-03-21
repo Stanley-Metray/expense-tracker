@@ -23,6 +23,9 @@ function handleSubmit(e) {
 async function submit(e) {
     try {
         const Income = new FormData(e.target);
+        const selectElement = document.getElementById('category');
+        const selectedValue = selectElement.value;
+        Income.append('income_category', selectedValue);
         const response = await axios.post('/add-income', Income, {
             headers: {
                 'Content-Type': 'application/json'
@@ -129,11 +132,13 @@ async function setDataToUI() {
                 html += `<tr id='${index}'>
                 <td>${date}</td>
                 <td>${income.income_name}</td>
+                <td>${income.income_category}</td>
                 <td>${income.income_description}</td>
                 <td>${income.income_amount}</td>
             </tr>`;
             });
             html += `<tr>
+        <td></td>
         <td></td>
         <td></td>
         <td class='text-end text-success fw-bolder'>Total:</td>
@@ -156,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function convertedDate(dateStr) {
     const date = new Date(dateStr);
 
-    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
     const formattedDate = date.toLocaleDateString('en-US', options);
     return formattedDate;
 }

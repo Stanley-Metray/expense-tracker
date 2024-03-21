@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const upload = multer();
 const sequelize = require('./connection/connect');
 const appRouter = require('./routes/appRouter');
 const expenseRouter = require('./routes/expenseRouter');
@@ -29,6 +31,7 @@ app.use('/js', express.static(path.join(__dirname, "/node_modules/bootstrap/dist
 app.use('/fonts', express.static(path.join(__dirname, "/node_modules/bootstrap-icons/font")));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.png')));
+app.use(upload.none());
 app.use(appRouter);
 app.use(userRouter);
 app.use(expenseRouter);

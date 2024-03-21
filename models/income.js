@@ -19,6 +19,10 @@ const Income = sequelize.define('Income', {
     income_description : {
         type : DataTypes.STRING,
         allowNull : false
+    },
+    income_category : {
+        type : DataTypes.STRING,
+        allowNull : false
     }
 });
 

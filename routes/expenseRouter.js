@@ -12,4 +12,6 @@ router.put('/update-expense',authController.verifyToken, ExpenseController.updat
 
 router.delete('/delete-expense', ExpenseController.deleteExpense);
 
+router.get('/get-expenses-pagination', authController.verifyToken ,ExpenseController.getExpensesPagination);
+
 module.exports = router;

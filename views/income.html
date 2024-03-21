@@ -72,6 +72,18 @@
                         <input required type="textarea" id="income_description" name="income_description"
                             class="form-control" placeholder="Describe Here">
                     </div>
+                    <div class="input-group flex-nowrap mt-2">
+                        <span class="input-group-text fs-5" id="addon-wrapping"><i class="bi bi-tag-fill"></i></span>
+                        <select required id="category" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                            <option selected>Select Category</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Freelance">Freelance Income</option>
+                            <option value="Business">Business Income</option>
+                            <option value="Investment">Investment Income</option>
+                            <option value="Rental">Rental Income</option>
+                            <option value="Other">Other Income</option>
+                        </select>    
+                    </div>
                     <div class="my-3">
                         <div class="alert alert-primary fw-bold text-center ps-3" style="visibility: hidden" role="alert"
                             id="message">Hello</div>
@@ -93,6 +105,7 @@
                         <tr>
                             <td><strong>Date</strong></td>
                             <td><strong>Income</strong></td>
+                            <td><strong>Category</strong></td>
                             <td><strong>Description</strong></td>
                             <td><strong>Amount</strong></td>
                         </tr>

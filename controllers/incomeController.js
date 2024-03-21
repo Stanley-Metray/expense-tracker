@@ -1,14 +1,13 @@
 const path = require('path');
 const Income = require('../models/income');
-// const Order = require('../models/order');
 
-module.exports.getExpensePage = async (req, res)=>{
+module.exports.getExpensePage = async (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "income.html"));
 }
 
 module.exports.postAddIncome = async (req, res) => {
     try {
-        console.log(req.body);
+
         const createdIncome = await Income.create(req.body);
         if (createdIncome)
             res.status(200).send(true);
@@ -18,9 +17,7 @@ module.exports.postAddIncome = async (req, res) => {
 }
 
 module.exports.getAllIncomes = async (req, res) => {
-    console.log("Hello");
     try {
-        console.log(req.body)
         const incomes = await Income.findAll({
             where: { UserId: req.body.UserId }
         });
