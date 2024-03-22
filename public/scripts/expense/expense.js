@@ -5,7 +5,6 @@ let temp_expense;
 
 function handleSubmit(e) {
     e.preventDefault();
-    e.stopPropagation();
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
 
@@ -23,6 +22,7 @@ function handleSubmit(e) {
 
 async function submit(e) {
     try {
+        e.stopPropagation();
         const Expense = new FormData(e.target);
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
@@ -46,7 +46,7 @@ async function submit(e) {
 
 async function update(e) {
     try {
-        e.preventDefault();
+        e.stopPropagation();
         const formData = new FormData(e.target);
         const selectedValue = document.getElementById('category').value;
         formData.append('expense_category', selectedValue);
@@ -109,8 +109,8 @@ document.getElementById('expense-table').addEventListener('click', (e) => {
 document.getElementById('btn-delete').addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
-        if (id) {
-            const response = await axios.delete(`/delete-expense?id=${id}`);
+        if (temp_expense.id) {
+            const response = await axios.delete(`/delete-expense?id=${temp_expense.id}`);
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
             if (data)
@@ -119,6 +119,7 @@ document.getElementById('btn-delete').addEventListener('click', async (e) => {
 
         setDataToUI();
     } catch (error) {
+        console.log(error);
         setMessage(`<p>${'Internal Server Error'} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 });
@@ -186,7 +187,9 @@ const setExpenseTableData = (expenses) => {
 const getPaginationData = async (event) => {
     event.stopPropagation();
     try {
-        const URL = `http://localhost:3000/get-expenses-pagination?page=${event.target.closest('button').value}`;
+        let limit = localStorage.getItem('rows_per_page');
+        const URL = `http://localhost:3000/get-expenses-pagination?page=${event.target.closest('button').value}&limit=${limit}`
+
         const response = await axios.get(URL);
         const data = await response.data;
         expenses = data.expenses;
@@ -203,9 +206,6 @@ const getPaginationData = async (event) => {
 
             setExpenseTableData(expenses);
         }
-        else {
-            document.getElementById('next-page').disabled = true;
-        }
 
     } catch (error) {
         console.log(error);
@@ -214,7 +214,8 @@ const getPaginationData = async (event) => {
 
 async function setDataToUI() {
     try {
-        const response = await axios.get(`http://localhost:3000/get-expenses-pagination?page=1`);
+        const limit = localStorage.getItem('rows_per_page') || 10;
+        const response = await axios.get(`http://localhost:3000/get-expenses-pagination?page=1&limit=${limit}`);
         const data = await response.data;
         expenses = data.expenses;
         const pagination = data.pagination;
@@ -226,6 +227,12 @@ async function setDataToUI() {
         setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
+
+
+document.getElementById('rows-per-page').addEventListener('change', (e)=>{
+    localStorage.setItem("rows_per_page", e.target.value);
+    window.location.reload();
+});
 
 
 function convertedDate(dateStr) {

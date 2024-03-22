@@ -118,15 +118,17 @@ module.exports.getExpensesPagination = async (req, res) => {
         console.clear();
         console.log(req.body);
         console.log(req.query);
+        console.log(req.url);
         const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
         const UserId = req.body.UserId;
-        const offset = (page - 1) * 10
+        const offset = (page - 1) * limit;
         const expenses = await Expense.findAll({
             where: {
                 UserId: UserId
             },
             offset: offset,
-            limit: 10
+            limit: limit
         });
 
         const count = await Expense.count({
