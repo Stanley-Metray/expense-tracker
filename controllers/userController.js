@@ -211,4 +211,22 @@ module.exports.postResetPassword = async (req,res)=>{
     }
 }
 
+module.exports.getBalanceSheet = async (req, res)=>{
+    try {
+        const userData = await User.findOne({where : {id : req.body.UserId}, attributes : ['total_income', 'total_expense']});
+
+        let balanceSheet = {
+            total_income : userData.total_income,
+            total_expense : userData.total_expense,
+            balance : Number(userData.total_income) - Number(userData.total_expense),
+        }
+
+        res.status(200).send(balanceSheet);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+}
+
 

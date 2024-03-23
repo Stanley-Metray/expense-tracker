@@ -48,10 +48,10 @@
       <label class="btn btn-outline-dark" for="daily-report">Daily</label>
 
       <input type="radio" class="btn-check" name="report" id="weekly-report" autocomplete="off">
-      <label class="btn btn-outline-dark" for="weekly-report">Monthly</label>
+      <label class="btn btn-outline-dark" for="weekly-report">Weekly</label>
 
       <input type="radio" class="btn-check" name="report" id="monthly-report" autocomplete="off">
-      <label class="btn btn-outline-dark" for="monthly-report">Yearly</label>
+      <label class="btn btn-outline-dark" for="monthly-report">Monthly</label>
     </div>
   </main>
 
@@ -59,7 +59,15 @@
     <div class="container p-1">
       <div class="container bg-dark text-white d-flex justify-content-between p-2 mb-1">
         <h5 id="report-title">Report</h5>
-        <button class="btn btn-primary btn-sm" id="download-report">Download Report</button>
+        <div>
+          <button class="btn btn-primary btn-sm" id="download-report">Download Report</button>
+        <button id="btn-recent-download" class="btn btn-info btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Recent Downloads
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark" id="download-links">
+          
+        </ul>
+        </div>
       </div>
       <table id="report-table" class="table table-dark table-striped table-hover">
         <thead>
@@ -80,12 +88,7 @@
     </table>
     <div class="container">
       <div class="dropdown d-flex justify-content-end">
-        <button id="btn-recent-download" class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Recent Downloads
-        </button>
-        <ul class="dropdown-menu dropdown-menu-dark" id="download-links">
-          
-        </ul>
+        
       </div>
     </div>
   

@@ -166,9 +166,9 @@ module.exports.getDownloadReport = async (req, res) => {
 
 module.exports.getDownloadLinks = async (req, res)=>{
   try {
-    const downloadLinks = await ReportLinks.findAll({where : {UserId : req.body.UserId}});
+    const downloadLinks = await ReportLinks.findAll({where : {UserId : req.body.UserId},  order: [['createdAt', 'DESC']], limit : 10});
     if(downloadLinks)
-      res.status(200).json(downloadLinks);
+      res.status(200).json(downloadLinks.reverse());
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

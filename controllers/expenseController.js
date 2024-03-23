@@ -114,11 +114,6 @@ module.exports.deleteExpense = async (req, res) => {
 
 module.exports.getExpensesPagination = async (req, res) => {
     try {
-        console.log("=========================================================================\n\n\n\n\n");
-        console.clear();
-        console.log(req.body);
-        console.log(req.query);
-        console.log(req.url);
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
         const UserId = req.body.UserId;
@@ -136,7 +131,7 @@ module.exports.getExpensesPagination = async (req, res) => {
                 UserId: UserId
             }
         });
-        console.log("COUNT : ", count);
+        
         let pagination;
 
         if (expenses.length === 0) {
@@ -164,5 +159,23 @@ module.exports.getExpensesPagination = async (req, res) => {
         res.status(200).json({ expenses, pagination });
     } catch (error) {
         console.log(error);
+    }
+}
+
+
+module.exports.getNetExpense = async (req, res)=>{
+    try {
+        const total_expense = await User.findOne({
+            where : {
+                id : req.body.UserId
+            },
+            attributes : ['total_expense']
+        });
+
+        if(total_expense)
+            res.status(200).send(total_expense);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
     }
 }

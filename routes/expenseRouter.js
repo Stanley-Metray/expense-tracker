@@ -14,4 +14,6 @@ router.delete('/delete-expense', ExpenseController.deleteExpense);
 
 router.get('/get-expenses-pagination', authController.verifyToken ,ExpenseController.getExpensesPagination);
 
+router.get('/get-net-expense', authController.verifyToken, ExpenseController.getNetExpense);
+
 module.exports = router;

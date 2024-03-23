@@ -28,6 +28,10 @@ const User = sequelize.define('User', {
     total_expense : {
         type : DataTypes.INTEGER,
         defaultValue : 0
+    },
+    total_income : {
+        type : DataTypes.INTEGER,
+        defaultValue : 0
     }
 });
 

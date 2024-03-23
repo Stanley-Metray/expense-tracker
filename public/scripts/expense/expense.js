@@ -74,8 +74,6 @@ async function update(e) {
 }
 
 
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 // handling which item to delete or update 
 
 document.getElementById('expense-table').addEventListener('click', (e) => {
@@ -107,6 +105,7 @@ document.getElementById('expense-table').addEventListener('click', (e) => {
 // function to delete selected expense 
 
 document.getElementById('btn-delete').addEventListener('click', async (e) => {
+    e.preventDefault();
     e.stopPropagation();
     try {
         if (temp_expense.id) {
@@ -157,7 +156,7 @@ const setPagination = async (pagination) => {
 
 }
 
-const setExpenseTableData = (expenses) => {
+const setExpenseTableData = () => {
     if (Array.isArray(expenses)) {
         let html = '';
         let total = 0;
@@ -169,7 +168,7 @@ const setExpenseTableData = (expenses) => {
         <td>${expense.expense_name}</td>
         <td>${expense.expense_category}</td>
         <td>${expense.expense_description}</td>
-        <td>${expense.expense_amount}</td>
+        <td>${expense.expense_amount.toLocaleString()}</td>
     </tr>`;
         });
         html += `<tr>
@@ -177,7 +176,7 @@ const setExpenseTableData = (expenses) => {
 <td></td>
 <td></td>
 <td class='text-end text-success fw-bolder'>Total:</td>
-<td class='text-success fw-bolder'>${total}</td>
+<td class='text-success fw-bolder'>${total.toLocaleString()}</td>
 </tr>`;
 
         document.getElementById('all-expenses').innerHTML = html;
@@ -188,7 +187,7 @@ const getPaginationData = async (event) => {
     event.stopPropagation();
     try {
         let limit = localStorage.getItem('rows_per_page');
-        const URL = `http://localhost:3000/get-expenses-pagination?page=${event.target.closest('button').value}&limit=${limit}`
+        const URL = `/get-expenses-pagination?page=${event.target.closest('button').value}&limit=${limit}`
 
         const response = await axios.get(URL);
         const data = await response.data;
@@ -215,12 +214,21 @@ const getPaginationData = async (event) => {
 async function setDataToUI() {
     try {
         const limit = localStorage.getItem('rows_per_page') || 10;
-        const response = await axios.get(`http://localhost:3000/get-expenses-pagination?page=1&limit=${limit}`);
+        const response = await axios.get(`/get-expenses-pagination?page=1&limit=${limit}`);
         const data = await response.data;
         expenses = data.expenses;
         const pagination = data.pagination;
-        if (setPagination(pagination))
-            setExpenseTableData(expenses);
+        setPagination(pagination);
+        setExpenseTableData();
+        const res = await axios.get('/get-balance-sheet');
+        const dat = await res.data;
+        let icon;
+        if (dat.balance < 0)
+            icon = `<i class="bi bi-graph-down-arrow text-danger"></i>`;
+        else
+            icon = `<i class="bi bi-graph-up-arrow text-success"></i>`;
+
+        document.getElementById('net-expense').innerHTML = `<span class='text-success'>Net Income: ${dat.total_income.toLocaleString()}</span> | <span class='text-danger'>Net Expense: ${dat.total_expense.toLocaleString()}</span> | <span class='text-warning'>Balance: ${dat.balance}</span> &nbsp; &nbsp;${icon}`;
 
     } catch (error) {
         document.getElementById('all-expenses').innerHTML = '';
@@ -229,7 +237,7 @@ async function setDataToUI() {
 }
 
 
-document.getElementById('rows-per-page').addEventListener('change', (e)=>{
+document.getElementById('rows-per-page').addEventListener('change', (e) => {
     localStorage.setItem("rows_per_page", e.target.value);
     window.location.reload();
 });

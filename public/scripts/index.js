@@ -1,7 +1,21 @@
 document.getElementById('daily-report').addEventListener('click', async (e) => {
+    getReport('/get-daliy-report');
+    document.getElementById('report-title').innerText = "Today";
+});
+
+document.getElementById('weekly-report').addEventListener('click', async (e) => {
+    getReport('/get-weekly-report');
+    document.getElementById('report-title').innerText = "This Week";
+});
+
+document.getElementById('monthly-report').addEventListener('click', async (e) => {
+    getReport('/get-monthly-report');
+    document.getElementById('report-title').innerText = "This Month";
+});
+
+const getReport = async (url) => {
     try {
-        console.clear();
-        const response = await axios.get('/get-daliy-report');
+        const response = await axios.get(url);
         const data = await response.data;
 
         const total_expenses = data.total_expenses;
@@ -12,11 +26,10 @@ document.getElementById('daily-report').addEventListener('click', async (e) => {
 
         const report = getCombinedArray(incomes, expenses);
         setDataToUI(total_expenses, total_income, report);
-
     } catch (error) {
         console.log(error);
     }
-});
+}
 
 
 function getCombinedArray(incomes, expenses) {
@@ -103,29 +116,30 @@ document.getElementById('download-report').addEventListener('click', async () =>
 
 document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('daily-report').click();
+    document.getElementById('report-title').innerText = "Today";
     const response = await axios.get('/premium-status');
     const data = await response.data;
-    if(data.premium){
-    try {
-        const response = await axios.get('/get-download-links');
-        const links = await response.data;
-        let html = "";
-        if (links.length > 0) {
-            links.reverse();
-            links.forEach((link) => {
-                let date = convertedDate(link.createdAt);
-                html += `<li><li><a class="dropdown-item link-underline-opacity-100-hover" href=${link.link}>${date}</a></li></li>`;
-            });
+    if (data.premium) {
+        try {
+            const response = await axios.get('/get-download-links');
+            const links = await response.data;
+            let html = "";
+            if (links.length > 0) {
+                links.reverse();
+                links.forEach((link) => {
+                    let date = convertedDate(link.createdAt);
+                    html += `<li><li><a class="dropdown-item link-underline-opacity-100-hover" href=${link.link}>${date}</a></li></li>`;
+                });
 
-            document.getElementById('download-links').innerHTML = html;
+                document.getElementById('download-links').innerHTML = html;
+            }
+        } catch (error) {
+            console.log(error);
+            const message = await error.response.data;
+            alert(message);
         }
-    } catch (error) {
-        console.log(error);
-        const message = await error.response.data;
-        alert(message);
-    }}
-    else
-    {
+    }
+    else {
         document.getElementById('download-report').classList.add('disabled');
         document.getElementById('btn-recent-download').classList.add('disabled');
         document.getElementById('download-report').innerText = "Buy Premium To Download";
