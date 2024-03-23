@@ -5,6 +5,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const https = require('https');
 
 const routerConfig = require('./configuration/router-config');
 const favicon = require('serve-favicon');
@@ -18,6 +19,9 @@ const fs = require('fs');
 const app = express();
 const upload = multer();
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { 'flags': 'a' });
+
+// const privateKey = fs.readFileSync('server.key');
+// const certificate = fs.readFileSync('server.cert');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -37,6 +41,7 @@ routerConfig.config(app);
 (async () => {
     try {
         await sequelize.sync();
+        // https.createServer({key : privateKey, cert : certificate},app)
         app.listen(process.env.PORT || 3000);
     } catch (error) {
         console.log(error);

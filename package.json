@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A Node.js expense tracker application with MVC architecture, Sequelize ORM, and MySQL database. Allows users to track expenses and incomes, view data daily, monthly, and yearly, and calculates current balance.",
   "main": "app.js",
+  "engines": {
+    "node" : "15.11.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
