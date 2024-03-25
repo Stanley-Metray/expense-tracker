@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 const path = require("path");
 
-
-
 module.exports.generateToken = async (user) => {
     const payload = {
         id: user.id,
