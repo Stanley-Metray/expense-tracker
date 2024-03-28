@@ -12,6 +12,14 @@
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link href="fonts/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    @media (max-width: 750px) {
+    th:nth-child(2),
+    td:nth-child(2) {
+        display: none;
+    }
+}
+  </style>
 </head>
 
 <body>
@@ -59,7 +67,7 @@
     <div class="container p-1">
       <div class="container bg-dark text-white d-flex justify-content-between p-2 mb-1">
         <h5 id="report-title">Report</h5>
-        <div>
+        <div class="d-flex flex-md-row flex-column gap-2">
           <button class="btn btn-primary btn-sm" id="download-report">Download Report</button>
         <button id="btn-recent-download" class="btn btn-info btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Recent Downloads

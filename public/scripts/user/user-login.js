@@ -9,13 +9,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
         const status = response.status;
         const data = await response.data;
-        
-        if(status===200)
-        {
+
+        if (status === 200) {
             const now = new Date();
-            expirationDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-            document.cookie = `token=${data.token}; expires; ${expirationDate.toUTCString()}`;
-            document.cookie = `username=${data.name}; expires; ${expirationDate.toUTCString()}`;
+            const expirationDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            document.cookie = `token=${data.token}; expires=${expirationDate.toUTCString()}`;
+            document.cookie = `username=${data.name}; expires=${expirationDate.toUTCString()}`;
             window.location.href = '/';
         }
 
