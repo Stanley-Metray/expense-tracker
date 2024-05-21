@@ -9,46 +9,62 @@ module.exports.register = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "register.html"));
 }
 
-module.exports.login = (req, res) => {
+module.exports.getLogin = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "login.html"));
 }
 
 
-module.exports.postAddUser = async (req, res) => {
+// module.exports.postAddUser = async (req, res) => {
+//     try {
+//         let { name, email, password } = req.body;
+//         password = await bcrypt.hash(password, 10);
+
+//         const createdUser = await User.create({ name, email, password });
+
+//         const token = await authController.generateToken({ id: createdUser.id, email: createdUser.email });
+
+//         let tokens = [];
+//         if (createdUser.tokens && createdUser.tokens.length > 0) {
+//             tokens = JSON.parse(createdUser.tokens);
+//         }
+//         tokens.push(token);
+//         createdUser.tokens = JSON.stringify(tokens);
+
+//         await createdUser.save();
+
+//         res.status(201).send({ name: name, token: token });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send(error.message);
+//     }
+// };
+
+module.exports.postRegisterUser = async (req, res) => {
     try {
         let { name, email, password } = req.body;
         password = await bcrypt.hash(password, 10);
-
-        const createdUser = await User.create({ name, email, password });
-
-        const token = await authController.generateToken({ id: createdUser.id, email: createdUser.email });
-
-        let tokens = [];
-        if (createdUser.tokens && createdUser.tokens.length > 0) {
-            tokens = JSON.parse(createdUser.tokens);
+        const result = await User.create({ name, email, password });
+        if (result) {
+            const token = await authController.generateToken({ id: result._id, email: result.email });
+            result.tokens.push(token);
+            await result.save();
+            res.status(201).json({ name: result.name, token : token });
         }
-        tokens.push(token);
-        createdUser.tokens = JSON.stringify(tokens);
-
-        await createdUser.save();
-
-        res.status(201).send({ name: name, token: token });
+        else {  
+            res.status(500).json({message : "Something went wrong"});
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send(error.message);
     }
-};
+}
 
 
 // User login API completed
 
-module.exports.postGetUser = async (req, res) => {
+module.exports.postLogin = async (req, res) => {
     try {
-        const user = await User.findOne({
-            where: {
-                email: req.body.email
-            }
-        });
+        const user = await User.findOne({email : req.body.email});
         if (!user) {
             res.status(404).send('User not found');
             return;
@@ -60,15 +76,8 @@ module.exports.postGetUser = async (req, res) => {
             return;
         }
 
-        const token = await authController.generateToken({ id: user.id, email: user.email });
-
-        let tokens = [];
-        if (user.tokens && user.tokens.length > 0) {
-            tokens = JSON.parse(user.tokens);
-        }
-        tokens.push(token);
-        user.tokens = JSON.stringify(tokens);
-
+        const token = await authController.generateToken({ id: user._id, email: user.email });
+        user.tokens.push(token);
         await user.save();
 
         res.status(200).send({ name: user.name, token: token });
@@ -79,69 +88,21 @@ module.exports.postGetUser = async (req, res) => {
 };
 
 
-module.exports.updateUser = async (req, res) => {
-    try {
-        const id = req.body.id;
-        delete req.body.id;
-
-        const result = await User.update(req.body, {
-            where: {
-                id: id
-            },
-            returning: true
-        });
-
-
-        if (result[1] === 0)
-            res.status(404).send('User not found');
-        else
-            res.status(200).send(await User.findOne({ where: { id: id } }));
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-};
-
-
-module.exports.deleteUser = async (req, res) => {
-    try {
-        const id = req.query.id;
-
-        const user = await User.findOne({ where: { id } });
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        await User.destroy({ where: { id } });
-
-        res.status(200).send("User Deleted");
-
-    } catch (error) {
-        const user = await User.findOne({ where: { id } });
-        if (!user) {
-            return res.status(404).send('User Deleted');
-        }
-        else
-            res.status(500).send('Internal Server Error');
-    }
-};
-
 
 module.exports.getForgotPassword = (req, res) => {
     res.sendFile(path.join(__dirname, "../views", "forgotPassword.html"));
 }
 
 module.exports.getResetPassword = async (req, res) => {
-
     try {
         const id = req.params.id;
-
-        const fpr = await ForgotPasswordRequests.findOne({ where: { id: id } });
+        const fpr = await ForgotPasswordRequests.findOne({_id : id});
 
         if (fpr && fpr.isActive) {
             res.sendFile(path.join(__dirname, "../views", "resetPassword.html"));
         }
         else {
-            res.send(`<h3 class='text-danger text-text-decoration-underline'>This link was expired</h3>`)
+            res.send(`<h3 style="color:red">This link is expired</h3>`)
         }
 
     } catch (error) {
@@ -152,11 +113,7 @@ module.exports.getResetPassword = async (req, res) => {
 
 module.exports.postForgotPassword = async (req, res) => {
     try {
-        const user = await User.findOne({
-            where: {
-                email: req.body.email
-            }
-        });
+        const user = await User.findOne({email : req.body.email});
         if (!user) {
             res.status(404).send('User not found');
             return;
@@ -171,7 +128,7 @@ module.exports.postForgotPassword = async (req, res) => {
         const transEmailApi = new Sib.TransactionalEmailsApi();
 
         // Generate a unique password reset token
-        const fp = await ForgotPasswordRequests.create({ UserId: user.id });
+        const fp = await ForgotPasswordRequests.create({ userId: user._id });
 
         const sender = { email: 'etracker@support.com' };
         const receivers = [{ email }];
@@ -180,7 +137,7 @@ module.exports.postForgotPassword = async (req, res) => {
             sender,
             to: receivers,
             subject: 'Forgot Password',
-            htmlContent: `Click <a href='http://localhost:3000/password/reset-password/${fp.id}'>here</a> to reset your password.`
+            htmlContent: `Click <a href='http://localhost:3000/password/reset-password/${fp._id}'>here</a> to reset your password.`
         });
 
         res.status(200).send({ message: 'Email sent successfully' });
@@ -190,14 +147,14 @@ module.exports.postForgotPassword = async (req, res) => {
     }
 };
 
-module.exports.postResetPassword = async (req,res)=>{
+module.exports.postResetPassword = async (req, res) => {
     try {
-        let {id, password } = req.body;
+        let { id, password } = req.body;
         password = await bcrypt.hash(password, 10);
-        
-        const fpr = await ForgotPasswordRequests.findOne({where : {id}});
-        const user = await User.findOne({where : {id : fpr.UserId}});
-        
+
+        const fpr = await ForgotPasswordRequests.findById(id);
+        const user = await User.findById(fpr.userId);
+
         user.password = password;
         fpr.isActive = false;
 
@@ -211,14 +168,14 @@ module.exports.postResetPassword = async (req,res)=>{
     }
 }
 
-module.exports.getBalanceSheet = async (req, res)=>{
+module.exports.getBalanceSheet = async (req, res) => {
     try {
-        const userData = await User.findOne({where : {id : req.body.UserId}, attributes : ['total_income', 'total_expense']});
+        const user = await User.findById(req.body.userId).select('totalIncome totalExpense');
 
         let balanceSheet = {
-            total_income : userData.total_income,
-            total_expense : userData.total_expense,
-            balance : Number(userData.total_income) - Number(userData.total_expense),
+            totalIncome: user.totalIncome,
+            totalExpense: user.totalExpense,
+            balance: user.totalIncome - user.totalExpense,
         }
 
         res.status(200).send(balanceSheet);

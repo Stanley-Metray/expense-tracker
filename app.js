@@ -1,6 +1,5 @@
 require('dotenv').config();
-const sequelize = require('./connection/connect');
-require('./configuration/db-config').config();
+const {connectDB} = require('./connection/connect');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -16,9 +15,6 @@ const app = express();
 const upload = multer();
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { 'flags': 'a' });
 
-// const helmet = require('helmet');
-// app.use(helmet());
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -33,12 +29,11 @@ app.use(upload.none());
 
 routerConfig.config(app);
 
-(async () => {
-    try {
-        await sequelize.sync();
-        
-        app.listen(process.env.PORT || 5000);
-    } catch (error) {
-        console.log(error);
-    }
-})();
+connectDB(()=>{
+    console.clear();
+    app.listen(3000, (err)=>{
+        if(err)
+            console.log(err);
+        console.log("Server started");
+    })
+});

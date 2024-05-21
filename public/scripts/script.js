@@ -44,7 +44,7 @@ document.getElementById('buy-premium').addEventListener('click', async (e) => {
             description: 'Payment for Upgrading To Premium',
             order_id: order.id,
             handler: async function (response) {
-                const result = await axios.post('/upgarde-user', { order_id: response.razorpay_order_id, premium: true }, {
+                const result = await axios.post('/upgarde-user', { orderId: response.razorpay_order_id, premium: true }, {
                     headers: {
                         'Content-Type': 'application/json'
                     }

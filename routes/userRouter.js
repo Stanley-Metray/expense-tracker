@@ -4,17 +4,11 @@ const authController = require('../controllers/authController');
 
 router.get('/register', UserController.register);
 
-router.post('/register', UserController.postAddUser);
+router.post('/register', UserController.postRegisterUser);
 
-router.get('/login', UserController.login);
+router.get('/login', UserController.getLogin);
 
-router.post('/login', UserController.postGetUser);
-
-router.post('/get-user', UserController.postGetUser);
-
-router.put('/update-user', UserController.updateUser);
-
-router.delete('/delete-user', UserController.deleteUser);
+router.post('/login', UserController.postLogin);
 
 router.get('/password/forgot-password', UserController.getForgotPassword);
 

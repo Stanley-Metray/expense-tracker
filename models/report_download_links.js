@@ -1,17 +1,19 @@
-const sequelize  = require("../connection/connect");
-const {DataTypes} = require('sequelize');
+const {mongoose} = require('../connection/connect');
 
-const ReportLinks = sequelize.define('report_link', {
-    id : {
-        type : DataTypes.INTEGER,
-        allowNull : false,
-        primaryKey : true,
-        autoIncrement : true
+const reportLinksSchema = new mongoose.Schema({
+    link: {
+        type: String,
+        required: true
     },
-    link : {
-        type : DataTypes.STRING,
-        allowNull : false
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
+}, {
+    timestamps: true
 });
+
+const ReportLinks = mongoose.model('ReportLinks', reportLinksSchema);
 
 module.exports = ReportLinks;

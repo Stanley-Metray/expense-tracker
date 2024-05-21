@@ -1,5 +1,5 @@
 let expenses;
-let temp_expense;
+let tempExpense;
 
 // handling submission and updation
 
@@ -10,24 +10,23 @@ function handleSubmit(e) {
 
     if (button.getAttribute('data-bs-update') === 'false') {
         submit(e);
-    }
-    else {
+    } else {
         update(e);
         button.innerText = 'Add';
         button.setAttribute('data-bs-update', 'false');
         btnDelete.classList.replace('d-inline-block', 'd-none');
-        temp_expense = undefined;
+        tempExpense = undefined;
     }
 }
 
 async function submit(e) {
     try {
         e.stopPropagation();
-        const Expense = new FormData(e.target);
+        const expense = new FormData(e.target);
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
-        Expense.append('expense_category', selectedValue);
-        const response = await axios.post('/add-expense', Expense, {
+        expense.append('expenseCategory', selectedValue);
+        const response = await axios.post('/add-expense', expense, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -49,11 +48,11 @@ async function update(e) {
         e.stopPropagation();
         const formData = new FormData(e.target);
         const selectedValue = document.getElementById('category').value;
-        formData.append('expense_category', selectedValue);
-        formData.append('id', temp_expense.id);
+        formData.append('expenseCategory', selectedValue);
+        formData.append('id', tempExpense._id); // Use _id instead of id
 
-        const dif = Math.abs(e.target.expense_amount.value - temp_expense.expense_amount);
-        formData.append('increase', e.target.expense_amount.value > temp_expense.expense_amount);
+        const dif = Math.abs(e.target.expenseAmount.value - tempExpense.expenseAmount);
+        formData.append('increase', e.target.expenseAmount.value > tempExpense.expenseAmount);
         formData.append('dif', dif);
 
         const response = await axios.put('/update-expense', formData, {
@@ -73,24 +72,26 @@ async function update(e) {
     }
 }
 
-
 // handling which item to delete or update 
 
 document.getElementById('expense-table').addEventListener('click', (e) => {
-    const expense = expenses[e.target.closest('tr').id];
-    document.getElementById('expense_name').value = expense.expense_name;
-    document.getElementById('expense_amount').value = expense.expense_amount;
-    document.getElementById('expense_description').value = expense.expense_description;
+    const expenseId = e.target.closest('tr').id;
+    const expense = expenses.find(expense => expense._id === expenseId);
+    console.log(expenseId);
+    console.log(expenses);
+    document.getElementById('expenseName').value = expense.expenseName;
+    document.getElementById('expenseAmount').value = expense.expenseAmount;
+    document.getElementById('expenseDescription').value = expense.expenseDescription;
     const selectElement = document.getElementById('category');
     Array.from(selectElement.options).forEach((option) => {
-        if (option.value === expense.expense_category) {
+        if (option.value === expense.expenseCategory) {
             option.selected = true;
         } else {
             option.selected = false;
         }
     });
 
-    temp_expense = expense;
+    tempExpense = expense;
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
     button.innerText = 'Update';
@@ -108,8 +109,8 @@ document.getElementById('btn-delete').addEventListener('click', async (e) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-        if (temp_expense.id) {
-            const response = await axios.delete(`/delete-expense?id=${temp_expense.id}`);
+        if (tempExpense._id) { // Use _id instead of id
+            const response = await axios.delete(`/delete-expense?id=${tempExpense._id}`);
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
             if (data)
@@ -133,13 +134,11 @@ function setMessage(HTML) {
     }, 3000);
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
     setDataToUI();
 });
 
 const setPagination = async (pagination) => {
-
     if (pagination.isPagination) {
         const paginationContainer = document.getElementById('pagination-container');
         paginationContainer.classList.replace('d-none', 'd-flex');
@@ -151,24 +150,22 @@ const setPagination = async (pagination) => {
 </div>`;
 
         return true;
-    }
-    else return false;
-
+    } else return false;
 }
 
 const setExpenseTableData = () => {
     if (Array.isArray(expenses)) {
         let html = '';
         let total = 0;
-        expenses.forEach((expense, index) => {
+        expenses.forEach((expense) => {
             let date = convertedDate(expense.updatedAt);
-            total = total + expense.expense_amount;
-            html += `<tr id='${index}'>
+            total += expense.expenseAmount;
+            html += `<tr id='${expense._id}'>
         <td>${date}</td>
-        <td>${expense.expense_name}</td>
-        <td>${expense.expense_category}</td>
-        <td>${expense.expense_description}</td>
-        <td>${expense.expense_amount.toLocaleString()}</td>
+        <td>${expense.expenseName}</td>
+        <td>${expense.expenseCategory}</td>
+        <td>${expense.expenseDescription}</td>
+        <td>${expense.expenseAmount}</td>
     </tr>`;
         });
         html += `<tr>
@@ -176,7 +173,7 @@ const setExpenseTableData = () => {
 <td></td>
 <td></td>
 <td class='text-end text-success fw-bolder'>Total:</td>
-<td class='text-success fw-bolder'>${total.toLocaleString()}</td>
+<td class='text-success fw-bolder'>${total}</td>
 </tr>`;
 
         document.getElementById('all-expenses').innerHTML = html;
@@ -195,7 +192,6 @@ const getPaginationData = async (event) => {
         const pagination = data.pagination;
         let paginationContainer = document.getElementById('pagination-container');
         if (pagination.isPagination) {
-
             paginationContainer.classList.replace('d-none', 'd-flex');
             paginationContainer.innerHTML = `<ul class="pagination">
             <li class="page-item"><button class="page-link" onclick='getPaginationData(event)' value=${pagination.prev}><i class="bi bi-caret-left-fill"></i></button></li>
@@ -205,7 +201,6 @@ const getPaginationData = async (event) => {
 
             setExpenseTableData(expenses);
         }
-
     } catch (error) {
         console.log(error);
     }
@@ -228,26 +223,21 @@ async function setDataToUI() {
         else
             icon = `<i class="bi bi-graph-up-arrow text-success"></i>`;
 
-        document.getElementById('net-expense').innerHTML = `<span class='text-success'>Net Income: ${dat.total_income.toLocaleString()}</span> | <span class='text-danger'>Net Expense: ${dat.total_expense.toLocaleString()}</span> | <span class='text-warning'>Balance: ${dat.balance}</span> &nbsp; &nbsp;${icon}`;
-
+        document.getElementById('net-expense').innerHTML = `<span class='text-success'>Net Income: ${dat.totalIncome}</span> | <span class='text-danger'>Net Expense: ${dat.totalExpense}</span> | <span class='text-warning'>Balance: ${dat.balance}</span> &nbsp; &nbsp;${icon}`;
     } catch (error) {
         document.getElementById('all-expenses').innerHTML = '';
-        setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
+        setMessage(`<p>Something went wrong<i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
-
 
 document.getElementById('rows-per-page').addEventListener('change', (e) => {
     localStorage.setItem("rows_per_page", e.target.value);
     window.location.reload();
 });
 
-
 function convertedDate(dateStr) {
     const date = new Date(dateStr);
-
     const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
     const formattedDate = date.toLocaleDateString('en-US', options);
     return formattedDate;
 }
-

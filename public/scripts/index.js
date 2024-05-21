@@ -18,14 +18,14 @@ const getReport = async (url) => {
         const response = await axios.get(url);
         const data = await response.data;
 
-        const total_expenses = data.total_expenses;
-        const total_income = data.total_income;
+        const totalExpenses = data.totalExpenses;
+        const totalIncome = data.totalIncome;
 
         const expenses = data.expenses;
         const incomes = data.incomes;
 
         const report = getCombinedArray(incomes, expenses);
-        setDataToUI(total_expenses, total_income, report);
+        setDataToUI(totalExpenses, totalIncome, report);
     } catch (error) {
         console.log(error);
     }
@@ -36,9 +36,9 @@ function getCombinedArray(incomes, expenses) {
     const combinedArray = [...incomes, ...expenses];
 
     const combinedArrayWithType = combinedArray.map(item => {
-        if (item.hasOwnProperty('income_amount')) {
+        if (item.hasOwnProperty('incomeAmount')) {
             return { ...item, type: 'income' };
-        } else if (item.hasOwnProperty('expense_amount')) {
+        } else if (item.hasOwnProperty('expenseAmount')) {
             return { ...item, type: 'expense' };
         }
     });
@@ -56,7 +56,7 @@ function convertedDate(dateStr) {
     return formattedDate;
 }
 
-async function setDataToUI(total_expenses, total_income, report) {
+async function setDataToUI(totalExpenses, totalIncome, report) {
     try {
         let html = "";
         report.forEach((element) => {
@@ -64,9 +64,9 @@ async function setDataToUI(total_expenses, total_income, report) {
                 let date = convertedDate(element.createdAt);
                 html += `<tr>
                 <td>${date}</td>
-                <td></td>
-                <td>${element.income_description}</td>
-                <td class='text-end'>${element.income_amount.toLocaleString()}</td>
+                <td>${element.incomeCategory}</td>
+                <td>${element.incomeDescription}</td>
+                <td class='text-end'>${element.incomeAmount.toLocaleString()}</td>
                 <td></td>
             </tr>`
             }
@@ -74,10 +74,10 @@ async function setDataToUI(total_expenses, total_income, report) {
                 let date = convertedDate(element.createdAt);
                 html += `<tr>
                 <td>${date}</td>
-                <td>${element.expense_category}</td>
-                <td>${element.expense_description}</td>
+                <td>${element.expenseCategory}</td>
+                <td>${element.expenseDescription}</td>
                 <td></td>
-                <td class='text-end'>${element.expense_amount.toLocaleString()}</td>
+                <td class='text-end'>${element.expenseAmount.toLocaleString()}</td>
             </tr>`
             }
 
@@ -87,14 +87,14 @@ async function setDataToUI(total_expenses, total_income, report) {
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class='text-success fw-bold text-end'>${total_income.toLocaleString()}</td>
-                <td class='text-danger fw-bold text-end'>${total_expenses.toLocaleString()}</td>
+                <td class='text-success fw-bold text-end'>${totalIncome.toLocaleString()}</td>
+                <td class='text-danger fw-bold text-end'>${totalExpenses.toLocaleString()}</td>
             </tr>`
 
         document.getElementById('report').innerHTML = html;
     } catch (error) {
-        document.getElementById('all-expenses').innerHTML = '';
-        setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
+        console.log(error);
+        alert("Something went wrong");
     }
 }
 

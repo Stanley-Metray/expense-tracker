@@ -1,22 +1,21 @@
-const sequelize  = require("../connection/connect");
-const {DataTypes} = require('sequelize');
+const {mongoose} = require('../connection/connect');
 
-
-const Order = sequelize.define('Order', {
-    id : {
-        type : DataTypes.INTEGER,
-        primaryKey : true,
-        allowNull : false,
-        autoIncrement : true
+const orderSchema = new mongoose.Schema({
+    orderId : {
+        type : String,
+        required : true
     },
-    order_id : { 
-        type : DataTypes.STRING,
-        allowNull : false
+    userId : {
+        type : mongoose.Schema.ObjectId,
+        ref : 'user',
+        required : true
     },
-    premium : {
-        type : DataTypes.BOOLEAN,
-        defaultValue : false
+    premium: {
+        type: Boolean,
+        default: false
     }
 });
+
+const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;
