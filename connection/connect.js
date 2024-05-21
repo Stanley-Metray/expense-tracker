@@ -1,11 +1,16 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const mongoose = require('mongoose');
 
+// const url = "mongodb+srv://stanleymetray:lclaKnptDdnU5IXh@cluster0.mpfuqkg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-const sequelize = new Sequelize(process.env.DEFAULT_DATABASE, process.env.USER, process.env.PASSWORD, {
-    dialect: process.env.DIALECT,
-    host: 'localhost',
-    port: 3306
-});
+const url = "mongodb+srv://stanleymetray:lclaKnptDdnU5IXh@cluster0.mpfuqkg.mongodb.net/e-tracker?retryWrites=true&w=majority&appName=Cluster0";
 
-module.exports = sequelize;
+const connectDB = async (startServer) => {
+    try {
+        await mongoose.connect(url);
+        startServer();
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+module.exports = { connectDB, mongoose };

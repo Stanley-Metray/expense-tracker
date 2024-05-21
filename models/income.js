@@ -1,29 +1,36 @@
-const sequelize = require('../connection/connect');
-const {DataTypes} = require('sequelize');
+const {mongoose} = require('../connection/connect');
 
-const Income = sequelize.define('Income', {
-    id : {
-        type : DataTypes.INTEGER,
-        primaryKey : true,
-        autoIncrement : true,
-        allowNull : false
+const IncomeSchema = new mongoose.Schema({
+    incomeName: {
+        type: String,
+        required: true
     },
-    income_name : {
-        type : DataTypes.STRING,
-        allowNull : false
+    incomeAmount: {
+        type: Number,
+        required: true
     },
-    income_amount : {
-        type : DataTypes.DOUBLE,
-        allowNull : false
+    incomeDescription: {
+        type: String,
+        required: true
     },
-    income_description : {
-        type : DataTypes.STRING,
-        allowNull : false
+    incomeCategory: {
+        type: String,
+        required: true
     },
-    income_category : {
-        type : DataTypes.STRING,
-        allowNull : false
+    userId : {
+        type : mongoose.Schema.ObjectId,
+        ref : "user"
+    },
+    createdAt : {
+        type : Date,
+        default : new Date().toUTCString()
+    },
+    updatedAt : {
+        type : Date,
+        default : new Date().toUTCString()
     }
 });
+
+const Income = mongoose.model('income', IncomeSchema);
 
 module.exports = Income;

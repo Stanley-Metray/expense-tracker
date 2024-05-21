@@ -12,6 +12,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"
         integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+    @media (max-width: 750px) {
+    th:nth-child(3),
+    td:nth-child(3) {
+        display: none;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -55,7 +63,7 @@
                             <div class="input-group flex-nowrap">
                                 <span class="input-group-text fs-5" id="addon-wrapping"><i
                                         class="bi bi-diagram-2-fill"></i></span>
-                                <input required type="text" id="expense_name" name="expense_name" class="form-control"
+                                <input required type="text" id="expenseName" name="expenseName" class="form-control"
                                     placeholder="Enter Text">
                             </div>
                         </div>
@@ -63,7 +71,7 @@
                             <div class="input-group flex-nowrap">
                                 <span class="input-group-text fs-5" id="addon-wrapping"><i
                                         class="bi bi-currency-rupee"></i></span>
-                                <input required type="number" min="1" id="expense_amount" name="expense_amount"
+                                <input required type="number" min="1" id="expenseAmount" name="expenseAmount"
                                     class="form-control" placeholder="Enter Amount">
                             </div>
                         </div>
@@ -94,7 +102,7 @@
                     <div class="input-group flex-nowrap mt-2">
                         <span class="input-group-text fs-5" id="addon-wrapping"><i
                                 class="bi bi-chat-left-text-fill"></i></span>
-                        <input required type="textarea" id="expense_description" name="expense_description"
+                        <input required type="textarea" id="expenseDescription" name="expenseDescription"
                             class="form-control" placeholder="Describe Here">
                     </div>
                     <div class="my-3">

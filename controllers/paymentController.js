@@ -6,10 +6,7 @@ module.exports.makePayment = async (req, res) => {
         key_id: process.env.RAZOR_KEY_ID,
         key_secret: process.env.RAZORPAY_KEY_SECRET
     });
-    // const razorpay = new Razorpay({
-    //     key_id: "rzp_test_FIFPO5GC78zjhW",
-    //     key_secret: "pglM25JC1v0htFUGjMvdvipT"
-    // });
+    
     const options = {
         amount: 5000,
         currency: 'INR',
@@ -37,7 +34,7 @@ module.exports.upgardeUser = async (req, res) => {
 
 module.exports.premiumStatus = async (req, res) => {
     try {
-        const order = await Order.findOne({ where: { UserId: req.body.UserId } });
+        const order = await Order.findOne({userId : req.body.userId});
         
         if (order && order.premium)
             res.status(200).send({ premium: true });

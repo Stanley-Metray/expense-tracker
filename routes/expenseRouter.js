@@ -10,7 +10,7 @@ router.get('/get-all-expenses', authController.verifyToken, ExpenseController.ge
 
 router.put('/update-expense',authController.verifyToken, ExpenseController.updateExpense);
 
-router.delete('/delete-expense', ExpenseController.deleteExpense);
+router.delete('/delete-expense', authController.verifyToken ,ExpenseController.deleteExpense);
 
 router.get('/get-expenses-pagination', authController.verifyToken ,ExpenseController.getExpensesPagination);
 

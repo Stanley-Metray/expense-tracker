@@ -1,33 +1,32 @@
 let incomes;
-let temp_income;
+let tempIncome;
 
 // handling submission and updation
 
 function handleSubmit(e) {
     e.preventDefault();
-    e.stopPropagation();
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
 
     if (button.getAttribute('data-bs-update') === 'false') {
         submit(e);
-    }
-    else {
+    } else {
         update(e);
         button.innerText = 'Add';
         button.setAttribute('data-bs-update', 'false');
         btnDelete.classList.replace('d-inline-block', 'd-none');
-        temp_income = undefined;
+        tempIncome = undefined;
     }
 }
 
 async function submit(e) {
     try {
-        const Income = new FormData(e.target);
+        e.stopPropagation();
+        const income = new FormData(e.target);
         const selectElement = document.getElementById('category');
         const selectedValue = selectElement.value;
-        Income.append('income_category', selectedValue);
-        const response = await axios.post('/add-income', Income, {
+        income.append('incomeCategory', selectedValue);
+        const response = await axios.post('/add-income', income, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -40,24 +39,26 @@ async function submit(e) {
             e.target.reset();
         }
     } catch (error) {
-        console.log(error);
         setMessage(`<p>${'Internal Server Error'} <i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
 
 async function update(e) {
     try {
+        e.stopPropagation();
         const formData = new FormData(e.target);
         const selectedValue = document.getElementById('category').value;
-        formData.append('income_category', selectedValue);
-        formData.append('id', temp_income.id);
+        formData.append('incomeCategory', selectedValue);
+        formData.append('id', tempIncome._id); // Use _id instead of id
 
-        const dif = Math.abs(e.target.income_amount.value - temp_income.income_amount);
-        formData.append('increase', e.target.income_amount.value > temp_income.income_amount);
+        const dif = Math.abs(e.target.incomeAmount.value - tempIncome.incomeAmount);
+        console.log(dif);
+        formData.append('increase', e.target.incomeAmount.value > tempIncome.incomeAmount);
+       
         formData.append('dif', dif);
 
         const response = await axios.put('/update-income', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: { 'Content-Type': 'text/json' }
         });
         const data = await response.data;
 
@@ -73,18 +74,25 @@ async function update(e) {
     }
 }
 
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 // handling which item to delete or update 
 
 document.getElementById('income-table').addEventListener('click', (e) => {
-    const Income = incomes[e.target.closest('tr').id];
-    document.getElementById('income_name').value = Income.income_name;
-    document.getElementById('income_amount').value = Income.income_amount;
-    document.getElementById('income_description').value = Income.income_description;
+    const incomeId = e.target.closest('tr').id;
+    const income = incomes.find(income => income._id === incomeId);
 
+    document.getElementById('incomeName').value = income.incomeName;
+    document.getElementById('incomeAmount').value = income.incomeAmount;
+    document.getElementById('incomeDescription').value = income.incomeDescription;
+    const selectElement = document.getElementById('category');
+    Array.from(selectElement.options).forEach((option) => {
+        if (option.value === income.incomeCategory) {
+            option.selected = true;
+        } else {
+            option.selected = false;
+        }
+    });
 
-    temp_income = Income;
+    tempIncome = income;
     const button = document.getElementById('submit');
     const btnDelete = document.getElementById('btn-delete');
     button.innerText = 'Update';
@@ -102,8 +110,8 @@ document.getElementById('btn-delete').addEventListener('click', async (e) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-        if (temp_income) {
-            const response = await axios.delete(`/delete-income?id=${temp_income.id}`);
+        if (tempIncome._id) { // Use _id instead of id
+            const response = await axios.delete(`/delete-income?id=${tempIncome._id}`);
             e.target.classList.replace('d-inline-block', 'd-none');
             const data = await response.data;
             if (data)
@@ -127,8 +135,11 @@ function setMessage(HTML) {
     }, 3000);
 }
 
-const setPagination = async (pagination) => {
+document.addEventListener('DOMContentLoaded', () => {
+    setDataToUI();
+});
 
+const setPagination = async (pagination) => {
     if (pagination.isPagination) {
         const paginationContainer = document.getElementById('pagination-container');
         paginationContainer.classList.replace('d-none', 'd-flex');
@@ -140,24 +151,22 @@ const setPagination = async (pagination) => {
 </div>`;
 
         return true;
-    }
-    else return false;
-
+    } else return false;
 }
 
-const setIncomeTableData = (incomes) => {
+const setIncomeTableData = () => {
     if (Array.isArray(incomes)) {
         let html = '';
         let total = 0;
-        incomes.forEach((income, index) => {
+        incomes.forEach((income) => {
             let date = convertedDate(income.updatedAt);
-            total = total + income.income_amount;
-            html += `<tr id='${index}'>
+            total = total + income.incomeAmount;
+            html += `<tr id='${income._id}'>
         <td>${date}</td>
-        <td>${income.income_name}</td>
-        <td>${income.income_category}</td>
-        <td>${income.income_description}</td>
-        <td>${income.income_amount.toLocaleString()}</td>
+        <td>${income.incomeName}</td>
+        <td>${income.incomeCategory}</td>
+        <td>${income.incomeDescription}</td>
+        <td>${income.incomeAmount}</td>
     </tr>`;
         });
         html += `<tr>
@@ -165,7 +174,7 @@ const setIncomeTableData = (incomes) => {
 <td></td>
 <td></td>
 <td class='text-end text-success fw-bolder'>Total:</td>
-<td class='text-success fw-bolder'>${total.toLocaleString()}</td>
+<td class='text-success fw-bolder'>${total}</td>
 </tr>`;
 
         document.getElementById('all-incomes').innerHTML = html;
@@ -184,7 +193,6 @@ const getPaginationData = async (event) => {
         const pagination = data.pagination;
         let paginationContainer = document.getElementById('pagination-container');
         if (pagination.isPagination) {
-
             paginationContainer.classList.replace('d-none', 'd-flex');
             paginationContainer.innerHTML = `<ul class="pagination">
             <li class="page-item"><button class="page-link" onclick='getPaginationData(event)' value=${pagination.prev}><i class="bi bi-caret-left-fill"></i></button></li>
@@ -208,33 +216,27 @@ async function setDataToUI() {
         incomes = data.incomes;
         const pagination = data.pagination;
         setPagination(pagination);
-        setIncomeTableData(incomes);
+        setIncomeTableData();
         const res = await axios.get('/get-balance-sheet');
         const dat = await res.data;
         let icon;
-        if(dat.balance<0)
+        if (dat.balance < 0)
             icon = `<i class="bi bi-graph-down-arrow text-danger"></i>`;
         else
             icon = `<i class="bi bi-graph-up-arrow text-success"></i>`;
 
-        document.getElementById('net-income').innerHTML = `<span class='text-success'>Net Income: ${dat.total_income.toLocaleString()}</span> | <span class='text-danger'>Net Expense: ${dat.total_expense.toLocaleString()}</span> | <span class='text-warning'>Balance: ${dat.balance}</span> &nbsp; &nbsp;${icon}`;
+        document.getElementById('net-income').innerHTML = `<span class='text-success'>Net Income: ${dat.totalIncome}</span> | <span class='text-danger'>Net Expense: ${dat.totalExpense}</span> | <span class='text-warning'>Balance: ${dat.balance}</span> &nbsp; &nbsp;${icon}`;
 
     } catch (error) {
         document.getElementById('all-incomes').innerHTML = '';
-        setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
+        setMessage(`<p>Something went wrong<i class="bi bi-x-circle-fill"></i></p>`);
     }
 }
-
 
 document.getElementById('rows-per-page').addEventListener('change', (e) => {
     localStorage.setItem("rows_per_page", e.target.value);
     window.location.reload();
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    setDataToUI();
-});
-
 
 function convertedDate(dateStr) {
     const date = new Date(dateStr);
@@ -243,51 +245,3 @@ function convertedDate(dateStr) {
     const formattedDate = date.toLocaleDateString('en-US', options);
     return formattedDate;
 }
-
-// **************************************************************
-// async function setDataToUI() {
-//     try {
-//         const response = await axios.get(`/get-all-incomes`);
-//         incomes = await response.data;
-//         if (Array.isArray(incomes)) {
-//             let html = '';
-//             let total = 0;
-//             incomes.forEach((income, index) => {
-//                 let date = convertedDate(income.updatedAt);
-//                 total = total + income.income_amount;
-//                 html += `<tr id='${index}'>
-//                 <td>${date}</td>
-//                 <td>${income.income_name}</td>
-//                 <td>${income.income_category}</td>
-//                 <td>${income.income_description}</td>
-//                 <td>${income.income_amount}</td>
-//             </tr>`;
-//             });
-//             html += `<tr>
-//         <td></td>
-//         <td></td>
-//         <td></td>
-//         <td class='text-end text-success fw-bolder'>Total:</td>
-//         <td class='text-success fw-bolder'>${total}</td>
-//     </tr>`;
-
-//             document.getElementById('all-incomes').innerHTML = html;
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         document.getElementById('all-incomes').innerHTML = '';
-//         setMessage(`<p>${await error.response.data} <i class="bi bi-x-circle-fill"></i></p>`);
-//     }
-// }
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     setDataToUI();
-// });
-
-// function convertedDate(dateStr) {
-//     const date = new Date(dateStr);
-
-//     const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-//     const formattedDate = date.toLocaleDateString('en-US', options);
-//     return formattedDate;
-// }

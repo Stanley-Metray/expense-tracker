@@ -1,38 +1,73 @@
-const sequelize = require('../connection/connect');
-const {DataTypes} = require('sequelize');
+const {mongoose} = require('../connection/connect');
 
-const User = sequelize.define('User', {
-    id : {
-        type : DataTypes.INTEGER,
-        allowNull : false,
-        autoIncrement : true,
-        primaryKey : true,
+const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
-    name : {
-        type : DataTypes.STRING,
-        allowNull : false,
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    email : {
-        type : DataTypes.STRING,
-        allowNull : false,
-        unique : true
+    password: {
+        type: String,
+        required: true
     },
-    password : {
-        type : DataTypes.STRING,
-        allowNull : false
+    tokens: {
+        type: [String], 
+        default: []
     },
-    tokens : {
-        type : DataTypes.JSON,
-        defaultValue : []
+    totalExpense: {
+        type: Number,
+        default: 0
     },
-    total_expense : {
-        type : DataTypes.INTEGER,
-        defaultValue : 0
-    },
-    total_income : {
-        type : DataTypes.INTEGER,
-        defaultValue : 0
+    totalIncome: {
+        type: Number,
+        default: 0
     }
 });
 
+const User = mongoose.model('User', UserSchema);
+
 module.exports = User;
+
+
+// const sequelize = require('../connection/connect');
+// const {DataTypes} = require('sequelize');
+
+// const User = sequelize.define('User', {
+//     id : {
+//         type : DataTypes.INTEGER,
+//         allowNull : false,
+//         autoIncrement : true,
+//         primaryKey : true,
+//     },
+//     name : {
+//         type : DataTypes.STRING,
+//         allowNull : false,
+//     },
+//     email : {
+//         type : DataTypes.STRING,
+//         allowNull : false,
+//         unique : true
+//     },
+//     password : {
+//         type : DataTypes.STRING,
+//         allowNull : false
+//     },
+//     tokens : {
+//         type : DataTypes.JSON,
+//         defaultValue : []
+//     },
+//     total_expense : {
+//         type : DataTypes.INTEGER,
+//         defaultValue : 0
+//     },
+//     total_income : {
+//         type : DataTypes.INTEGER,
+//         defaultValue : 0
+//     }
+// });
+
+// module.exports = User;
