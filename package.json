@@ -4,13 +4,12 @@
   "description": "A Node.js expense tracker application with MVC architecture, Sequelize ORM, and MySQL database. Allows users to track expenses and incomes, view data daily, monthly, and yearly, and calculates current balance.",
   "main": "app.js",
   "engines": {
-    "node": "14.x"
+    "node": "15.11.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "start-server": "node app.js",
-    "build": "netlify deploy --prod"
+    "start-server": "node app.js"
   },
   "keywords": [],
   "author": "Standli",
@@ -38,5 +37,8 @@
     "serve-favicon": "^2.5.0",
     "sib-api-v3-sdk": "^8.5.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.25.0"
   }
 }
