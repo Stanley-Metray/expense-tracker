@@ -1,6 +1,6 @@
 const path = require('path');
 const User = require('../models/user');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const authController = require('../controllers/authController');
 const ForgotPasswordRequests = require('../models/forgot_password_requests');
 const Sib = require('sib-api-v3-sdk');
