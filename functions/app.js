@@ -1,15 +1,16 @@
 require('dotenv').config();
-const {connectDB} = require('./connection/connect');
+const {connectDB} = require('../connection/connect');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const routerConfig = require('./configuration/router-config');
+const routerConfig = require('../configuration/router-config');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const morgan = require('morgan');
 const fs = require('fs');
+const serverless = require('serverless-http');
 
 const app = express();
 const upload = multer();
@@ -39,3 +40,6 @@ connectDB(()=>{
         console.log("Server started");
     })
 });
+
+app.use("/.netlify/functions/app", router);
+module.exports.handler = serverless(app);

@@ -1,8 +1,2 @@
 [build]
-  command = "npm install && npm run build"
-  publish = "views"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+    functions = "functions"
