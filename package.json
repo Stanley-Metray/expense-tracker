@@ -7,9 +7,11 @@
     "node": "15.11.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
-    "start-server": "node app.js"
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "test:ci": "lerna run test:ci",
+    "start-server": "node app.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "Standli",
