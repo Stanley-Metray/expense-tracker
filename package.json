@@ -4,7 +4,7 @@
   "description": "A Node.js expense tracker application with MVC architecture, Sequelize ORM, and MySQL database. Allows users to track expenses and incomes, view data daily, monthly, and yearly, and calculates current balance.",
   "main": "app.js",
   "engines": {
-    "node": "15.11.0"
+    "node": "20.12.0"
   },
   "scripts": {
     "build": "lerna run build",
