@@ -7,9 +7,7 @@
     "node": "15.11.0"
   },
   "scripts": {
-    "build": "lerna run build",
-    "test": "lerna run test",
-    "test:ci": "lerna run test:ci",
+    "build": "netlify deploy --prod",
     "start-server": "node app.js",
     "start": "node app.js"
   },
