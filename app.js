@@ -20,18 +20,20 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('combined', { stream: accessLogStream }));
-app.use('/css', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/css")));
-app.use('/js', express.static(path.join(__dirname, "/node_modules/bootstrap/dist/js")));
-app.use('/fonts', express.static(path.join(__dirname, "/node_modules/bootstrap-icons/font")));
+app.use('/css', express.static(path.join(__dirname, "../node_modules/bootstrap/dist/css")));
+app.use('/js', express.static(path.join(__dirname, "../node_modules/bootstrap/dist/js")));
+app.use('/fonts', express.static(path.join(__dirname, "../node_modules/bootstrap-icons/font")));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.png')));
 app.use(upload.none());
+
+const port = process.env.PORT || 3000;
 
 routerConfig.config(app);
 
 connectDB(()=>{
     console.clear();
-    app.listen(3000, (err)=>{
+    app.listen(port, (err)=>{
         if(err)
             console.log(err);
         console.log("Server started");
