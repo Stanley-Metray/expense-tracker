@@ -137,7 +137,7 @@ module.exports.postForgotPassword = async (req, res) => {
             sender,
             to: receivers,
             subject: 'Forgot Password',
-            htmlContent: `Click <a href='http://localhost:3000/password/reset-password/${fp._id}'>here</a> to reset your password.`
+            htmlContent: `Click <a href='https://etracker-nb7t.onrender.com/password/reset-password/${fp._id}'>here</a> to reset your password.`
         });
 
         res.status(200).send({ message: 'Email sent successfully' });
