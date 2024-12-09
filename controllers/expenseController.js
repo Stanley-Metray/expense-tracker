@@ -16,7 +16,7 @@ module.exports.postAddExpense = async (req, res) => {
                 .select('id totalExpense');
 
             user.totalExpense = user.totalExpense + createdExpense.expenseAmount;
-            user.save();
+            await user.save();
             res.status(200).send(true);
         }
     } catch (error) {
@@ -78,7 +78,7 @@ module.exports.deleteExpense = async (req, res) => {
         else {
             const user = await User.findById(req.body.userId).select('_id totalExpense');
             user.totalExpense = user.totalExpense - expense.expenseAmount;
-            user.save();
+            await user.save();
 
             res.status(200).send(true);
         }

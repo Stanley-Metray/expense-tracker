@@ -15,7 +15,7 @@ module.exports.postAddIncome = async (req, res) => {
                 .select('id totalIncome');
 
             user.totalIncome = user.totalIncome + createdIncome.incomeAmount;
-            user.save();
+            await user.save();
             res.status(200).send(true);
         }
     } catch (error) {
@@ -73,7 +73,7 @@ module.exports.deleteIncome = async (req, res) => {
         } else {
             const user = await User.findById(req.body.userId).select('_id totalIncome');
             user.totalIncome = user.totalIncome - income.incomeAmount;
-            user.save();
+            await user.save();
 
             res.status(200).send(true);
         }
